@@ -5,7 +5,7 @@ import (
 	"github.com/joshuahenriques/cixac-interpreter/object"
 )
 
-// Avoid creating object.Boolean every time
+// Avoid creating object.Boolean & object.Null every time
 var (
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
@@ -17,6 +17,8 @@ func Eval(node ast.Node) object.Object {
 
 	// Statements
 	case *ast.Program:
+		return evalStatements(node.Statements)
+	case *ast.BlockStatement:
 		return evalStatements(node.Statements)
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
@@ -33,6 +35,8 @@ func Eval(node ast.Node) object.Object {
 		left := Eval(node.Left)
 		right := Eval(node.Right)
 		return evalInfixExpression(node.Operator, left, right)
+	case *ast.IfExpression:
+		return evalIfExpression(node)
 	}
 
 	return nil
@@ -129,5 +133,30 @@ func evalIntegerInfixExpression(operator string, left object.Object,
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
 		return NULL
+	}
+}
+
+func evalIfExpression(ie *ast.IfExpression) object.Object {
+	condition := Eval(ie.Condition)
+
+	if isTruthy(condition) {
+		return Eval(ie.Consequence)
+	} else if ie.Alternative != nil {
+		return Eval(ie.Alternative)
+	} else {
+		return NULL
+	}
+}
+
+func isTruthy(obj object.Object) bool {
+	switch obj {
+	case NULL:
+		return false
+	case TRUE:
+		return true
+	case FALSE:
+		return false
+	default:
+		return true
 	}
 }
