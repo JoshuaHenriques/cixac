@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/joshuahenriques/cixac-interpreter/repl"
+	"github.com/joshuahenriques/cixac/repl"
 )
 
 func main() {

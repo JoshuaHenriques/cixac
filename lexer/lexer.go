@@ -1,7 +1,7 @@
 package lexer
 
 import (
-	"github.com/joshuahenriques/cixac-interpreter/token"
+	"github.com/joshuahenriques/cixac/token"
 )
 
 type Lexer struct {

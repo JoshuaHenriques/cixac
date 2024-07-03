@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/joshuahenriques/cixac-interpreter/ast"
+	"github.com/joshuahenriques/cixac/ast"
 )
 
 type ObjectType string

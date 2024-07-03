@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/joshuahenriques/cixac-interpreter/ast"
-	"github.com/joshuahenriques/cixac-interpreter/lexer"
-	"github.com/joshuahenriques/cixac-interpreter/token"
+	"github.com/joshuahenriques/cixac/ast"
+	"github.com/joshuahenriques/cixac/lexer"
+	"github.com/joshuahenriques/cixac/token"
 )
 
 const (

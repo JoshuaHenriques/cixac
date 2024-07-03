@@ -1,6 +1,6 @@
 package evaluator
 
-import "github.com/joshuahenriques/cixac-interpreter/object"
+import "github.com/joshuahenriques/cixac/object"
 
 var builtins = map[string]*object.Builtin{
 	"len": {

@@ -3,7 +3,7 @@ package ast
 import (
 	"testing"
 
-	"github.com/joshuahenriques/cixac-interpreter/token"
+	"github.com/joshuahenriques/cixac/token"
 )
 
 func TestString(t *testing.T) {

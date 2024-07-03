@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/joshuahenriques/cixac-interpreter/token"
+	"github.com/joshuahenriques/cixac/token"
 )
 
 type Node interface {

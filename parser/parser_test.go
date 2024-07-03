@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/joshuahenriques/cixac-interpreter/ast"
-	"github.com/joshuahenriques/cixac-interpreter/lexer"
+	"github.com/joshuahenriques/cixac/ast"
+	"github.com/joshuahenriques/cixac/lexer"
 )
 
 func TestLetStatements(t *testing.T) {

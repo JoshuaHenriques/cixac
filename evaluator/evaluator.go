@@ -3,8 +3,8 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/joshuahenriques/cixac-interpreter/ast"
-	"github.com/joshuahenriques/cixac-interpreter/object"
+	"github.com/joshuahenriques/cixac/ast"
+	"github.com/joshuahenriques/cixac/object"
 )
 
 // Avoid creating object.Boolean & object.Null every time

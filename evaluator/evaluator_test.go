@@ -3,9 +3,9 @@ package evaluator
 import (
 	"testing"
 
-	"github.com/joshuahenriques/cixac-interpreter/lexer"
-	"github.com/joshuahenriques/cixac-interpreter/object"
-	"github.com/joshuahenriques/cixac-interpreter/parser"
+	"github.com/joshuahenriques/cixac/lexer"
+	"github.com/joshuahenriques/cixac/object"
+	"github.com/joshuahenriques/cixac/parser"
 )
 
 func testEval(input string) object.Object {

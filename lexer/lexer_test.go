@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"github.com/joshuahenriques/cixac-interpreter/token"
+	"github.com/joshuahenriques/cixac/token"
 )
 
 func TestNextToken(t *testing.T) {
