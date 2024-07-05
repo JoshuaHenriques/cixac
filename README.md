@@ -11,7 +11,9 @@ The Cixac programming language is a passion project that I decided to pursue wit
 **Make Commands**:
 
 ```make test``` - Runs all tests
+
 ```make build``` - Builds the project
+
 ```make run``` - Builds and runs REPL
 
 **Start REPL**:
@@ -141,8 +143,10 @@ print(hey("Joshua"))
 let arr = ["string", true, 29, fn(x) { x * x }]
 print(arr[0])
 # string
+
 print(arr[4 - 2])
 # 29
+
 print(arr[3](2))
 # 4
 ```
@@ -153,10 +157,13 @@ print(arr[3](2))
 let obj = {"name": "Alex", "age": 42, "title": "CEO", true: "boolean key", 50: "integer key"}
 print(obj["name"])
 # Alex
+
 print(obj["age"])
 # 42
+
 print(obj[true])
 # boolean key
+
 print(obj[50])
 # integer key
 ```
