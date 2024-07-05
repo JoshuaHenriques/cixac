@@ -20,4 +20,6 @@
 # Go workspace file
 go.work
 go.work.sum
-bin/cixac-interpreter
+bin/
+
+todo.md
