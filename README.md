@@ -178,7 +178,7 @@ print(obj[50])
 | ```-``` | Unary minus |
 | ```* /``` | Multiplication, Division |
 | ```+ -``` | Addition, Subtraction |
-| ```< >``` | Comparison |
+| ```< > <= >=``` | Comparison |
 | ```== !=``` | Equality |
 | ```!``` | Logical not |
 
