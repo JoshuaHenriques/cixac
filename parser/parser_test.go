@@ -17,6 +17,7 @@ func TestLetStatements(t *testing.T) {
 		{"let x = 5;", "x", 5},
 		{"let y = true;", "y", true},
 		{"let foobar = y;", "foobar", "y"},
+		{"let nil = null;", "nil", nil},
 	}
 
 	for _, tt := range tests {
@@ -50,6 +51,7 @@ func TestReturnStatements(t *testing.T) {
 		{"return 5;", 5},
 		{"return true;", true},
 		{"return foobar;", "foobar"},
+		{"return null", nil},
 	}
 
 	for _, tt := range tests {
@@ -211,6 +213,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"null == null", nil, "==", nil},
 	}
 
 	for _, tt := range infixTests {
@@ -398,6 +401,41 @@ func TestBooleanExpression(t *testing.T) {
 		if boolean.Value != tt.expectedBoolean {
 			t.Errorf("boolean.Value not %t. got=%t", tt.expectedBoolean,
 				boolean.Value)
+		}
+	}
+}
+
+func TestNullExpression(t *testing.T) {
+	tests := []struct {
+		input         string
+		expectedValue any
+	}{
+		{"null;", nil},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program has not enough statements. got=%d",
+				len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+				program.Statements[0])
+		}
+
+		null, ok := stmt.Expression.(*ast.Null)
+		if !ok {
+			t.Fatalf("exp not *ast.Null. got=%T", stmt.Expression)
+		}
+		if null.Value != tt.expectedValue {
+			t.Errorf("null.Value not %t. got=%t", tt.expectedValue, null.Value)
 		}
 	}
 }
@@ -988,11 +1026,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
 	return true
 }
 
-func testLiteralExpression(
-	t *testing.T,
-	exp ast.Expression,
-	expected interface{},
-) bool {
+func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
@@ -1002,6 +1036,8 @@ func testLiteralExpression(
 		return testIdentifier(t, exp, v)
 	case bool:
 		return testBooleanLiteral(t, exp, v)
+	case nil:
+		return testNullLiteral(t, exp, v)
 	}
 	t.Errorf("type of exp not handled. got=%T", exp)
 	return false
@@ -1064,6 +1100,25 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 	if bo.TokenLiteral() != fmt.Sprintf("%t", value) {
 		t.Errorf("bo.TokenLiteral not %t. got=%s",
 			value, bo.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func testNullLiteral(t *testing.T, exp ast.Expression, value any) bool {
+	null, ok := exp.(*ast.Null)
+	if !ok {
+		t.Errorf("exp not *ast.Null. got=%T", exp)
+		return false
+	}
+
+	if null.Value != value {
+		t.Errorf("null.Value not %t. got=%t", value, null.Value)
+	}
+
+	if null.TokenLiteral() != "null" {
+		t.Errorf("null.TokenLiteral not null. got=%s", null.TokenLiteral())
 		return false
 	}
 

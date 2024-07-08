@@ -66,6 +66,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
 
+	case *ast.Null:
+		return nativeNulltoNullObject(node.Value)
+
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
 		if isError(right) {
@@ -158,6 +161,10 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 		return TRUE
 	}
 	return FALSE
+}
+
+func nativeNulltoNullObject(input any) *object.Null {
+	return NULL
 }
 
 func evalPrefixExpression(operator string, right object.Object) object.Object {

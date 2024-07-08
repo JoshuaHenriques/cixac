@@ -64,11 +64,29 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{`"foobar" == "foo"`, false},
 		{`"foobar" != "foo"`, true},
 		{`"foobar" != "foobar"`, false},
+		{`null == null`, true},
+		{`null != null`, false},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 		testBooleanObject(t, evaluated, tt.expected)
+	}
+}
+
+func TestEvalNullExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected any
+	}{
+		{`let a = null; a`, nil},
+		{`if (5 == 5) { return null }`, nil},
+		{`null`, nil},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testNullObject(t, evaluated)
 	}
 }
 
@@ -103,6 +121,8 @@ func TestIfElseExpression(t *testing.T) {
 		{"if (1 > 2) { 10 }", nil},
 		{"if (1 > 2) { 10 } else { 20 }", 20},
 		{"if (1 < 2) { 10 } else { 20 }", 10},
+		{"if (null) { 10 } else { 20 }", 20},
+		{"if (1 < 2) { null } else { 20 }", nil},
 	}
 
 	for _, tt := range tests {
@@ -209,6 +229,10 @@ func TestErrorHandling(t *testing.T) {
 		{
 			`999[1]`,
 			"index operator not supported: INTEGER",
+		},
+		{
+			`null + null`,
+			"unknown operator: NULL + NULL",
 		},
 		{
 			`{"name": "Hello"}[fn(x) { x }];`,
