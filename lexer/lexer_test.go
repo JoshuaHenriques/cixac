@@ -32,6 +32,8 @@ func TestNextToken(t *testing.T) {
     [1, 2];
     {"foo": "bar"}
     let nil = null;
+    10 >= 10;
+    11 <= 10;
 `
 
 	tests := []struct {
@@ -128,6 +130,14 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "nil"},
 		{token.ASSIGN, "="},
 		{token.NULL, "null"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.GT_EQ, ">="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "11"},
+		{token.LT_EQ, "<="},
+		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
