@@ -49,6 +49,7 @@ Cixac is an object-oriented dynamic programming language where the syntax is sim
 | bool | ``true false`` |
 | int | ``0 33 7559`` |
 | str | ``"" "hello"`` |
+| null | ``null`` |
 | array | ``[] [1, 10] ["food", 49, true, {"foo": "bar"}]`` |
 | objects/hashmap | ``{"arr": [1, 2], 5: "five"} `` |
 
@@ -57,6 +58,7 @@ Cixac is an object-oriented dynamic programming language where the syntax is sim
 ```
 let int = 105329                         // integer
 let str = "This is a string"             // string
+let nil = null                           // null
 let obj = { "x": 0, "y": 0, "z": 0 }     // object/hashmap
 let arr = [1, 2, 3, 4, 5, 6, [0, 0, 0]]  // array 
 let fun = fn(a, b){ (a - b) * (a + b) }  // function
