@@ -62,6 +62,10 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"(1 < 2) == false", false},
 		{"(1 > 2) == true", false},
 		{"(1 > 2) == false", true},
+		{"(1 < 2) && true", true},
+		{"(1 > 2) && true", false},
+		{"(1 > 2) || false", false},
+		{"(1 > 2) || true", true},
 		{`"foobar" == "foobar"`, true},
 		{`"foobar" == "foo"`, false},
 		{`"foobar" != "foo"`, true},
@@ -515,14 +519,14 @@ func TestArrayIndexExpressions(t *testing.T) {
 
 func TestHashLiterals(t *testing.T) {
 	input := `let two = "two";
-{
-"one": 10 - 9,
-two: 1 + 1,
-"thr" + "ee": 6 / 2,
-4: 4,
-true: 5,
-false: 6
-}`
+    {
+      "one": 10 - 9,
+      two: 1 + 1,
+      "thr" + "ee": 6 / 2,
+      4: 4,
+      true: 5,
+      false: 6
+    }`
 	evaluated := testEval(input)
 	result, ok := evaluated.(*object.Hash)
 	if !ok {

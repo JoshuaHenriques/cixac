@@ -34,6 +34,8 @@ func TestNextToken(t *testing.T) {
     let nil = null;
     10 >= 10;
     11 <= 10;
+    true && false;
+    true || false;
 `
 
 	tests := []struct {
@@ -138,6 +140,14 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "11"},
 		{token.LT_EQ, "<="},
 		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.TRUE, "true"},
+		{token.AND, "&&"},
+		{token.FALSE, "false"},
+		{token.SEMICOLON, ";"},
+		{token.TRUE, "true"},
+		{token.OR, "||"},
+		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}

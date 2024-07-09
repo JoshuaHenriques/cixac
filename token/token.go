@@ -24,6 +24,9 @@ const (
 	ASTERISK = "*"
 	SLASH    = "/"
 
+	AND = "&&"
+	OR  = "||"
+
 	LT     = "<"
 	LT_EQ  = "<="
 	GT     = ">"
