@@ -180,6 +180,8 @@ print(obj[50])
 | ```+ -``` | Addition, Subtraction |
 | ```< > <= >=``` | Comparison |
 | ```== !=``` | Equality |
+| || | Logical or |
+| && | Logical and |
 | ```!``` | Logical not |
 
 ### Builtin functions
