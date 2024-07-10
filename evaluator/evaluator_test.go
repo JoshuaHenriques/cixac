@@ -389,6 +389,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len(1)`, "argument to `len` not supported, got INTEGER"},
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
 		{`len([1, 2, 3])`, 3},
+		{`len({})`, 0},
 		{`len([])`, 0},
 		{`len({"key1": 5, "key2": 10})`, 2},
 		{`first([1, 2, 3])`, 1},
@@ -401,6 +402,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`rest([])`, nil},
 		{`push([], 1)`, []int{1}},
 		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
+		{`pop([1, 2, 3])`, []int{1, 2}},
+		{`pop([])`, "ARRAY must have elements for `pop`"},
+		{`pop(1)`, "argument to `pop` must be ARRAY, got INTEGER"},
 		{`print("hey")`, nil},
 	}
 
