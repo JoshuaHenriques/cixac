@@ -188,7 +188,7 @@ print(obj[50])
 
 | Function | Signature | Description | 
 |----------|-----------|-------------| 
-| `len` | `len(arg: STRING \| ARRAY) -> INTEGER` | Returns length of strings and arrays | 
+| `len` | `len(arg: STRING \| ARRAY \| HASH) -> INTEGER` | Returns length of strings, arrays, and hashmaps | 
 | `print` | `print(arg: EXPRESSION) -> NULL` | Prints the value(s) to standard output | 
 | `first` | `first(arg: ARRAY) -> INTEGER \| NULL` | Returns the first element of the array | 
 | `last` | `last(arg: ARRAY) -> INTEGER \| NULL` | Returns the last element of the array | 
