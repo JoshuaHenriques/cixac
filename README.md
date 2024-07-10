@@ -194,3 +194,4 @@ print(obj[50])
 | `last` | `last(arg: ARRAY) -> INTEGER \| NULL` | Returns the last element of the array | 
 | `rest` | `rest(arg: ARRAY) -> ARRAY` | Returns new array with the first element removed | 
 | `push` | `push(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Returns a new array with value pushed onto the end of the array |
+| pop | pop(arr: ARRAY) -> ARRAY | Returns a new array with a value popped of the end of the array
