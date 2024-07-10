@@ -67,7 +67,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return nativeBoolToBooleanObject(node.Value)
 
 	case *ast.Null:
-		return nativeNulltoNullObject(node.Value)
+		return nativeNulltoNullObject()
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
@@ -163,7 +163,7 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	return FALSE
 }
 
-func nativeNulltoNullObject(input any) *object.Null {
+func nativeNulltoNullObject() *object.Null {
 	return NULL
 }
 
