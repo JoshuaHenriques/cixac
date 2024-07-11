@@ -35,11 +35,12 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			arr := args[0].(*object.Array)
-			if len(arr.Elements) > 0 {
-				return arr.Elements[0]
+
+			if len(arr.Elements) == 0 {
+				return NULL
 			}
 
-			return NULL
+			return arr.Elements[0]
 		},
 	},
 	"last": {
@@ -53,11 +54,12 @@ var builtins = map[string]*object.Builtin{
 
 			arr := args[0].(*object.Array)
 			length := len(arr.Elements)
-			if length > 0 {
-				return arr.Elements[length-1]
+
+			if length == 0 {
+				return NULL
 			}
 
-			return NULL
+			return arr.Elements[length-1]
 		},
 	},
 	"rest": {
@@ -70,14 +72,14 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			arr := args[0].(*object.Array)
-			length := len(arr.Elements)
-			if length > 0 {
-				newElements := make([]object.Object, length-1)
-				copy(newElements, arr.Elements[1:length])
-				return &object.Array{Elements: newElements}
+
+			if len(arr.Elements) == 0 {
+				return NULL
 			}
 
-			return NULL
+			newElements := arr.Elements[1:]
+
+			return &object.Array{Elements: newElements}
 		},
 	},
 	"push": {
@@ -90,13 +92,9 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			arr := args[0].(*object.Array)
-			length := len(arr.Elements)
+			arr.Elements = append(arr.Elements, []object.Object{args[1]}...)
 
-			newElements := make([]object.Object, length+1)
-			copy(newElements, arr.Elements)
-			newElements[length] = args[1]
-
-			return &object.Array{Elements: newElements}
+			return arr
 		},
 	},
 	"pop": {
@@ -115,10 +113,10 @@ var builtins = map[string]*object.Builtin{
 				return newError("ARRAY must have elements for `pop`")
 			}
 
-			newElements := make([]object.Object, length-1)
-			copy(newElements, arr.Elements)
+			popped := arr.Elements[length-1]
+			arr.Elements = arr.Elements[:length-1]
 
-			return &object.Array{Elements: newElements}
+			return popped
 		},
 	},
 	"pushleft": {
@@ -131,10 +129,9 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			arr := args[0].(*object.Array)
+			arr.Elements = append([]object.Object{args[1]}, arr.Elements...)
 
-			newElements := append([]object.Object{args[1]}, arr.Elements...)
-
-			return &object.Array{Elements: newElements}
+			return arr
 		},
 	},
 	"print": {

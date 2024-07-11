@@ -189,10 +189,10 @@ print(obj[50])
 | Function | Signature | Description | 
 |----------|-----------|-------------| 
 | `len` | `len(arg: STRING \| ARRAY \| HASH) -> INTEGER` | Returns length of strings, arrays, and hashmaps | 
-| `print` | `print(arg: EXPRESSION) -> NULL` | Prints the value(s) to standard output | 
-| `first` | `first(arg: ARRAY) -> INTEGER \| NULL` | Returns the first element of the array | 
-| `last` | `last(arg: ARRAY) -> INTEGER \| NULL` | Returns the last element of the array | 
+| `print` | `print(arg: EXPRESSION) -> NULL` | Prints the value(s) to standard output and returns NULL | 
+| `first` | `first(arg: ARRAY) -> ANY \| NULL` | Returns the first element of the array or NULL if empty | 
+| `last` | `last(arg: ARRAY) -> ANY \| NULL` | Returns the last element of the array or NULL if empty | 
 | `rest` | `rest(arg: ARRAY) -> ARRAY` | Returns new array with the first element removed | 
-| `push` | `push(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Returns a new array with the value pushed onto the end of the array |
-| `pushleft` | `pushleft(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Returns a new array with the value pushed to the beginning of the array |
-| `pop` | `pop(arr: ARRAY) -> ARRAY` | Returns a new array with a value popped of the end of the array
+| `push` | `push(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the end. Returns the mutated array. |
+| `pushleft` | `pushleft(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the beginning. Returns the mutated array. |
+| `pop` | `pop(arr: ARRAY) -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
