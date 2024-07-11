@@ -125,13 +125,35 @@ var builtins = map[string]*object.Builtin{
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
 			}
 			if args[0].Type() != object.ARRAY_OBJ {
-				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `pushleft` must be ARRAY, got %s", args[0].Type())
 			}
 
 			arr := args[0].(*object.Array)
 			arr.Elements = append([]object.Object{args[1]}, arr.Elements...)
 
 			return arr
+		},
+	},
+	"popleft": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of parameters. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != object.ARRAY_OBJ {
+				return newError("argument to `popleft` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arr := args[0].(*object.Array)
+			length := len(arr.Elements)
+
+			if length == 0 {
+				return newError("ARRAY must have elements for `popleft`")
+			}
+
+			popped := arr.Elements[0]
+			arr.Elements = arr.Elements[1:length]
+
+			return popped
 		},
 	},
 	"print": {

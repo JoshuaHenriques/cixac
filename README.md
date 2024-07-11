@@ -196,3 +196,4 @@ print(obj[50])
 | `push` | `push(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the end. Returns the mutated array. |
 | `pushleft` | `pushleft(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the beginning. Returns the mutated array. |
 | `pop` | `pop(arr: ARRAY) -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
+| `popleft` | `popleft(arr: ARRAY) -> ANY` | Mutates the array by removing the first element. Returns the popped value. | 

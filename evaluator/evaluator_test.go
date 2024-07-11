@@ -404,11 +404,15 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
 		{`pushleft([], 1)`, []int{1}},
 		{`pushleft([1, 2, 3], 4)`, []int{4, 1, 2, 3}},
-		{`pushleft(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
+		{`pushleft(1, 1)`, "argument to `pushleft` must be ARRAY, got INTEGER"},
 		{`pop([1, 2, 3])`, 3},
 		{`let arr = [1, 2, 3]; pop(arr); arr`, []int{1, 2}},
 		{`pop([])`, "ARRAY must have elements for `pop`"},
 		{`pop(1)`, "argument to `pop` must be ARRAY, got INTEGER"},
+		{`popleft([1, 2, 3])`, 1},
+		{`let arr = [1, 2, 3]; popleft(arr); arr`, []int{2, 3}},
+		{`popleft([])`, "ARRAY must have elements for `popleft`"},
+		{`popleft(1)`, "argument to `popleft` must be ARRAY, got INTEGER"},
 		{`print("hey")`, nil},
 	}
 
