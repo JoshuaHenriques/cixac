@@ -78,7 +78,7 @@ print((x + y) / 2 - 3)
 ```
 let a = 18
 
-let greaterThan = func(x) {
+let greaterThan = fn(x) {
 	if (x > 20) {
 		return "x is greater"
 	} else {
