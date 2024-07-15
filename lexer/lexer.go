@@ -43,6 +43,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.ASTERISK, l.ch)
 	case '/':
 		tok = newToken(token.SLASH, l.ch)
+	case '%':
+		tok = newToken(token.MOD, l.ch)
 	case '&':
 		if l.peekChar() == '&' {
 			tok = l.newTwoCharToken(token.AND)

@@ -23,6 +23,7 @@ const (
 	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
+	MOD      = "%"
 
 	AND = "&&"
 	OR  = "||"

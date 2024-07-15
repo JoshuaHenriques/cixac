@@ -241,6 +241,8 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return &object.Integer{Value: leftVal * rightVal}
 	case "/":
 		return &object.Integer{Value: leftVal / rightVal}
+	case "%":
+		return &object.Integer{Value: modLikePythonInt(leftVal, rightVal)}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case "<=":
@@ -453,4 +455,12 @@ func evalHashIndexExpression(hash, index object.Object) object.Object {
 	}
 
 	return pair.Value
+}
+
+func modLikePythonInt(x, y int64) int64 {
+	res := x % y
+	if (res < 0 && y > 0) || (res > 0 && y < 0) {
+		return res + y
+	}
+	return res
 }

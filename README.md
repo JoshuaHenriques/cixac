@@ -176,7 +176,7 @@ print(obj[50])
 | --------- | ----------- |
 | ```[]``` | Subscript |
 | ```-``` | Unary minus |
-| ```* /``` | Multiplication, Division |
+| ```* / %``` | Multiplication, Division, Modulo |
 | ```+ -``` | Addition, Subtraction |
 | ```< > <= >=``` | Comparison |
 | ```== !=``` | Equality |
