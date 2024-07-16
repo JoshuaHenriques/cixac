@@ -992,6 +992,46 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+func TestParseReassignStatement(t *testing.T) {
+	tests := []struct {
+		input              string
+		expectedIdentifier string
+		expectedValue      interface{}
+	}{
+		{"let x = 7; x = 6", "x", 6},
+		{"let y = true; y = false", "y", false},
+		{"let foobar = y; foobar = z", "foobar", "z"},
+		{"let nil = Null; nil = true", "nil", true},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 2 {
+			t.Fatalf("program.Statements does not contain 2 statements. got=%d",
+				len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[1].(*ast.ReassignStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.ReassignStatement. got=%T", stmt)
+		}
+
+		name := stmt.Name
+		if !testIdentifier(t, name, tt.expectedIdentifier) {
+			return
+		}
+
+		val := stmt.Value
+		if !testLiteralExpression(t, val, tt.expectedValue) {
+			return
+		}
+	}
+}
+
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())

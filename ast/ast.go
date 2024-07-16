@@ -303,7 +303,7 @@ func (al *ArrayLiteral) String() string {
 }
 
 type IndexExpression struct {
-	Token token.Token // The [ token
+	Token token.Token // the [ token
 	Left  Expression
 	Index Expression
 }
@@ -340,6 +340,29 @@ func (hl *HashLiteral) String() string {
 	out.WriteString("{")
 	out.WriteString(strings.Join(pairs, ", "))
 	out.WriteString("}")
+
+	return out.String()
+}
+
+type ReassignStatement struct {
+	Token token.Token // the '=' struct
+	Name  *Identifier
+	Value Expression
+}
+
+func (rs *ReassignStatement) statementNode()       {}
+func (rs *ReassignStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReassignStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(rs.Name.String())
+	out.WriteString(" " + rs.Token.Literal + " ")
+
+	if rs.Value != nil {
+		out.WriteString(rs.Value.String())
+	}
+
+	out.WriteString(";")
 
 	return out.String()
 }

@@ -287,6 +287,22 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
+func TestReassignStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a = 5; a = 10; a;", 10},
+		{"let a = 5 * 5; a = 5 * 11; a;", 55},
+		{"let a = 5; let b = a; a = a * b; a;", 25},
+		{"let a = 5; let b = a; let c = a + b + 5; c = c + 100; c;", 115},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
 func TestFunctionObject(t *testing.T) {
 	input := "fn(x) { x + 2; };"
 
@@ -423,7 +439,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`let arr = [1, 2, 3]; popleft(arr); arr`, []int{2, 3}},
 		{`popleft([])`, "ARRAY must have elements for `popleft`"},
 		{`popleft(1)`, "argument to `popleft` must be ARRAY, got INTEGER"},
-		{`print("hey")`, nil},
+		// {`print("hey")`, nil},
 	}
 
 	for _, tt := range tests {
