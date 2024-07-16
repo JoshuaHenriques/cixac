@@ -16,7 +16,7 @@ func TestNextToken(t *testing.T) {
     };
 
     let result = add(five, ten);
-    !-/*5;
+    !*-/5;
     5 < 10 > 5;
 
     if (5 < 10) {
@@ -34,8 +34,12 @@ func TestNextToken(t *testing.T) {
     let nil = null;
     10 >= 10;
     11 <= 10;
+    /*
+    this is a multi-line comment
+    */
     true && false;
     true || false;
+    // this is a comment
     5 % 4;
 `
 
@@ -80,9 +84,9 @@ func TestNextToken(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.SEMICOLON, ";"},
 		{token.BANG, "!"},
+		{token.ASTERISK, "*"},
 		{token.MINUS, "-"},
 		{token.SLASH, "/"},
-		{token.ASTERISK, "*"},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
 		{token.INT, "5"},
@@ -142,6 +146,8 @@ func TestNextToken(t *testing.T) {
 		{token.LT_EQ, "<="},
 		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
+		{token.COMMENT_START, "/*"},
+		{token.COMMENT_END, "*/"},
 		{token.TRUE, "true"},
 		{token.AND, "&&"},
 		{token.FALSE, "false"},
@@ -150,6 +156,7 @@ func TestNextToken(t *testing.T) {
 		{token.OR, "||"},
 		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
+		{token.COMMENT, "//"},
 		{token.INT, "5"},
 		{token.MOD, "%"},
 		{token.INT, "4"},

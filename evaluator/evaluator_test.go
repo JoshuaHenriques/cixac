@@ -161,12 +161,16 @@ func TestReturnStatements(t *testing.T) {
 				if (10 > 1) {
 					return 10;
 				}
+        // this is a comment
 				return 1;
 			}`, 10,
 		},
 		{
 			`
       let f = fn(x) {
+        /* multi
+          multi-line comment
+        */
         return x;
         x + 10;
       };
@@ -330,8 +334,10 @@ func TestEnclosingEnvironments(t *testing.T) {
 let first = 10;
 let second = 10;
 let third = 10;
+// this is a comment
 
 let ourFunction = fn(first) {
+  // this is a comment
   let second = 20;
 
   first + second + third;
