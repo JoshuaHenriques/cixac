@@ -73,6 +73,22 @@ print((x + y) / 2 - 3)
 # 7
 ```
 
+### Single and Multi-Line Comments
+
+```
+/*
+function adds two variables together
+
+@param - int x
+@param - int y
+@returns - int
+*/
+let add2 = fn(x, y) {
+	// add x + y
+	return x + y
+}
+```
+
 ### Conditional Expressions
 
 ```
