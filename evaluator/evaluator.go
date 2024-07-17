@@ -35,25 +35,58 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.ReturnValue{Value: val}
 
 	case *ast.LetStatement:
+		if ExistsInBuiltins(node.Name.Value) {
+			return newError("Identifier %s has same name as builtin", node.Name.Value)
+		}
+
+		if env.ExistsInScope(node.Name.Value) {
+			return newError("Identifier %s has already been declared", node.Name.Value)
+		}
+
 		val := Eval(node.Value, env)
 		if isError(val) {
 			return val
 		}
-		env.Set(node.Name.Value, val)
+
+		obj := object.ObjectMeta{Object: val, Const: node.Name.Const}
+		env.Set(node.Name.Value, obj)
 
 	case *ast.FunctionDeclaration:
+		if env.ExistsInScope(node.Name.Value) {
+			return newError("Function %s has already been declared", node.Name.Value)
+		}
+
+		if ExistsInBuiltins(node.Name.Value) {
+			return newError("Identifier %s has same name as builtin", node.Name.Value)
+		}
+
 		val := Eval(node.Function, env)
 		if isError(val) {
 			return val
 		}
-		env.Set(node.Name.Value, val)
+
+		env.Set(node.Name.Value, object.ObjectMeta{Object: val, Const: node.Name.Const})
 
 	case *ast.ReassignStatement:
+		if ExistsInBuiltins(node.Name.Value) {
+			return newError("Can't reassign %s builtin function", node.Name.Value)
+		}
+
+		obj, ok := env.Get(node.Name.Value)
+		if !ok {
+			return newError("Identifier %s doesn't exists", node.Name.Value)
+		}
+
+		if obj.Const {
+			return newError("Identifier %s is const and can't be reassigned", node.Name.Value)
+		}
+
 		val := Eval(node.Value, env)
 		if isError(val) {
 			return val
 		}
-		env.Set(node.Name.Value, val)
+
+		env.Set(node.Name.Value, object.ObjectMeta{Object: val})
 
 	// Expressions
 	case *ast.IntegerLiteral:
@@ -330,7 +363,7 @@ func isError(obj object.Object) bool {
 
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	if val, ok := env.Get(node.Value); ok {
-		return val
+		return val.Object
 	}
 
 	if builtin, ok := builtins[node.Value]; ok {
@@ -373,7 +406,8 @@ func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Enviro
 	env := object.NewEnclosedEnvironment(fn.Env)
 
 	for paramIdx, param := range fn.Parameters {
-		env.Set(param.Value, args[paramIdx])
+		obj := object.ObjectMeta{Object: args[paramIdx]}
+		env.Set(param.Value, obj)
 	}
 
 	return env

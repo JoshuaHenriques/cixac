@@ -71,6 +71,7 @@ func (ls *LetStatement) String() string {
 type Identifier struct {
 	Token token.Token // the token.IDENT token
 	Value string
+	Const bool
 }
 
 func (i *Identifier) expressionNode()      {}

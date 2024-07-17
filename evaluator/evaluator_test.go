@@ -252,6 +252,34 @@ func TestErrorHandling(t *testing.T) {
 			`{"name": "Hello"}[fn(x) { x }];`,
 			"unusable as hash key: FUNCTION",
 		},
+		{
+			`let four = 4; let four = 5`,
+			"Identifier four has already been declared",
+		},
+		{
+			`fn five() { 5 } fn five() { 6 }`,
+			`Function five has already been declared`,
+		},
+		{
+			`fn decl() { 5 } let decl = 6`,
+			`Identifier decl has already been declared`,
+		},
+		{
+			`let first = 7`,
+			`Identifier first has same name as builtin`,
+		},
+		{
+			`print = "foo"`,
+			`Can't reassign print builtin function`,
+		},
+		{
+			`object = "Person"`,
+			`Identifier object doesn't exists`,
+		},
+		{
+			`fn adder(x, y) { x + y } adder = 8`,
+			`Identifier adder is const and can't be reassigned`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -348,19 +376,19 @@ func TestFunctionApplication(t *testing.T) {
 
 func TestEnclosingEnvironments(t *testing.T) {
 	input := `
-let first = 10;
-let second = 10;
-let third = 10;
+let x = 10;
+let y = 10;
+let z = 10;
 // this is a comment
 
-let ourFunction = fn(first) {
+let ourFunction = fn(x) {
   // this is a comment
-  let second = 20;
+  let y = 20;
 
-  first + second + third;
+  x + y + z;
 };
 
-ourFunction(20) + first + second;`
+ourFunction(20) + x + y;`
 
 	testIntegerObject(t, testEval(input), 70)
 }

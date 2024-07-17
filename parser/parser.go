@@ -426,7 +426,7 @@ func (p *Parser) parseFunctionDeclaration() ast.Statement {
 	lit := &ast.FunctionLiteral{Token: p.curToken}
 
 	p.nextToken()
-	name := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	name := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal, Const: true}
 	funcDecl.Name = name
 
 	if !p.expectPeek(token.LPAREN) {

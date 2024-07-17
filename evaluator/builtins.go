@@ -166,3 +166,8 @@ var builtins = map[string]*object.Builtin{
 		},
 	},
 }
+
+func ExistsInBuiltins(name string) bool {
+	_, ok := builtins[name]
+	return ok
+}
