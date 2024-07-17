@@ -1020,16 +1020,55 @@ func TestParseReassignStatement(t *testing.T) {
 			t.Errorf("stmt not *ast.ReassignStatement. got=%T", stmt)
 		}
 
-		name := stmt.Name
-		if !testIdentifier(t, name, tt.expectedIdentifier) {
+		if !testIdentifier(t, stmt.Name, tt.expectedIdentifier) {
 			return
 		}
 
-		val := stmt.Value
-		if !testLiteralExpression(t, val, tt.expectedValue) {
+		if !testLiteralExpression(t, stmt.Value, tt.expectedValue) {
 			return
 		}
 	}
+}
+
+func TestParseFunctionDeclaration(t *testing.T) {
+	input := `fn adder(x, y) { return x + y }`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
+	}
+
+	fd, ok := program.Statements[0].(*ast.FunctionDeclaration)
+	if !ok {
+		t.Errorf("stmt not *ast.FunctionDeclaration. got=%T", fd)
+	}
+
+	if !testIdentifier(t, fd.Name, "adder") {
+		return
+	}
+
+	fn := fd.Function
+	if len(fn.Parameters) != 2 {
+		t.Fatalf("function literal parameters wrong. want 2, got=%d\n", len(fn.Parameters))
+	}
+
+	testLiteralExpression(t, fn.Parameters[0], "x")
+	testLiteralExpression(t, fn.Parameters[1], "y")
+
+	if len(fn.Body.Statements) != 1 {
+		t.Fatalf("fn.Body.Statements has not 1 statement. got=%d\n", len(fn.Body.Statements))
+	}
+
+	bodyStmt, ok := fn.Body.Statements[0].(*ast.ReturnStatement)
+	if !ok {
+		t.Fatalf("fn bodyStmt is not *ast.ExpressionStatement. got=%T", fn.Body.Statements[0])
+	}
+
+	testInfixExpression(t, bodyStmt.ReturnValue, "x", "+", "y")
 }
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {

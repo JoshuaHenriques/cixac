@@ -41,6 +41,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		env.Set(node.Name.Value, val)
 
+	case *ast.FunctionDeclaration:
+		val := Eval(node.Function, env)
+		if isError(val) {
+			return val
+		}
+		env.Set(node.Name.Value, val)
+
 	case *ast.ReassignStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {

@@ -143,6 +143,11 @@ func (p *Parser) parseStatement() ast.Statement {
 			return p.parseReassignStatement()
 		}
 		return p.parseExpressionStatement()
+	case token.FUNCTION:
+		if p.peekTokenIs(token.IDENT) {
+			return p.parseFunctionDeclaration()
+		}
+		return p.parseExpressionStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -414,6 +419,30 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	}
 
 	return list
+}
+
+func (p *Parser) parseFunctionDeclaration() ast.Statement {
+	funcDecl := &ast.FunctionDeclaration{Token: p.curToken}
+	lit := &ast.FunctionLiteral{Token: p.curToken}
+
+	p.nextToken()
+	name := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+	funcDecl.Name = name
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	lit.Parameters = p.parseFunctionParameters()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	lit.Body = p.parseBlockStatement()
+
+	funcDecl.Function = lit
+	return funcDecl
 }
 
 func (p *Parser) parseStringLiteral() ast.Expression {

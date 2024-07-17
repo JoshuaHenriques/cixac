@@ -109,7 +109,9 @@ print(greaterThan(a))
 ### Functions and Closures
 
 ```
-let multiply = fn(x, y) { x * y }
+fn multiply(x, y) { 
+  x * y 
+}
 print(multiply(40 / 2, 5))
 # 100 
 

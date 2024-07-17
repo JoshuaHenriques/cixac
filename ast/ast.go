@@ -345,7 +345,7 @@ func (hl *HashLiteral) String() string {
 }
 
 type ReassignStatement struct {
-	Token token.Token // the '=' struct
+	Token token.Token // the '=' token
 	Name  *Identifier
 	Value Expression
 }
@@ -363,6 +363,31 @@ func (rs *ReassignStatement) String() string {
 	}
 
 	out.WriteString(";")
+
+	return out.String()
+}
+
+type FunctionDeclaration struct {
+	Token    token.Token // the 'fn' token
+	Name     *Identifier
+	Function *FunctionLiteral
+}
+
+func (fd *FunctionDeclaration) statementNode()       {}
+func (fd *FunctionDeclaration) TokenLiteral() string { return fd.Token.Literal }
+func (fd *FunctionDeclaration) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range fd.Function.Parameters {
+		params = append(params, p.String())
+	}
+
+	out.WriteString(fd.Function.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") ")
+	out.WriteString(fd.Function.Body.String())
 
 	return out.String()
 }
