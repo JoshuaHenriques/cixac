@@ -41,6 +41,7 @@ func TestNextToken(t *testing.T) {
     true || false;
     // this is a comment
     5 % 4;
+    const x = 5;
 `
 
 	tests := []struct {
@@ -160,6 +161,11 @@ func TestNextToken(t *testing.T) {
 		{token.INT, "5"},
 		{token.MOD, "%"},
 		{token.INT, "4"},
+		{token.SEMICOLON, ";"},
+		{token.CONST, "const"},
+		{token.IDENT, "x"},
+		{token.ASSIGN, "="},
+		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}

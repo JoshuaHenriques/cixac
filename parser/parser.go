@@ -135,7 +135,9 @@ func (p *Parser) ParseProgram() *ast.Program {
 func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.LET:
-		return p.parseLetStatement()
+		return p.parseLetStatement(false)
+	case token.CONST:
+		return p.parseLetStatement(true)
 	case token.RETURN:
 		return p.parseReturnStatement()
 	case token.IDENT:
@@ -153,14 +155,23 @@ func (p *Parser) parseStatement() ast.Statement {
 	}
 }
 
-func (p *Parser) parseLetStatement() *ast.LetStatement {
-	stmt := &ast.LetStatement{Token: p.curToken}
+func (p *Parser) parseLetStatement(constant bool) *ast.LetStatement {
+	stmt := &ast.LetStatement{}
+
+	if constant {
+		stmt.Token = token.Token{Type: token.LET, Literal: "let"}
+	} else {
+		stmt.Token = p.curToken
+	}
 
 	if !p.expectPeek(token.IDENT) {
 		return nil
 	}
 
 	stmt.Name = p.parseIdentifier().(*ast.Identifier)
+	if constant {
+		stmt.Name.Const = true
+	}
 
 	if !p.expectPeek(token.ASSIGN) {
 		return nil

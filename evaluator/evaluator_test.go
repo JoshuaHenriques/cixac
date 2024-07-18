@@ -280,6 +280,10 @@ func TestErrorHandling(t *testing.T) {
 			`fn adder(x, y) { x + y } adder = 8`,
 			`Identifier adder is const and can't be reassigned`,
 		},
+		{
+			`const a = 7; a = 10`,
+			`Identifier a is const and can't be reassigned`,
+		},
 	}
 
 	for _, tt := range tests {

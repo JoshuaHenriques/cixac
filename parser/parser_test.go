@@ -998,10 +998,10 @@ func TestParseReassignStatement(t *testing.T) {
 		expectedIdentifier string
 		expectedValue      interface{}
 	}{
-		{"let x = 7; x = 6", "x", 6},
-		{"let y = true; y = false", "y", false},
-		{"let foobar = y; foobar = z", "foobar", "z"},
-		{"let nil = Null; nil = true", "nil", true},
+		{"x = 6", "x", 6},
+		{"y = false", "y", false},
+		{"foobar = z", "foobar", "z"},
+		{"nil = true", "nil", true},
 	}
 
 	for _, tt := range tests {
@@ -1010,12 +1010,12 @@ func TestParseReassignStatement(t *testing.T) {
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 
-		if len(program.Statements) != 2 {
-			t.Fatalf("program.Statements does not contain 2 statements. got=%d",
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
 				len(program.Statements))
 		}
 
-		stmt, ok := program.Statements[1].(*ast.ReassignStatement)
+		stmt, ok := program.Statements[0].(*ast.ReassignStatement)
 		if !ok {
 			t.Errorf("stmt not *ast.ReassignStatement. got=%T", stmt)
 		}
@@ -1027,6 +1027,34 @@ func TestParseReassignStatement(t *testing.T) {
 		if !testLiteralExpression(t, stmt.Value, tt.expectedValue) {
 			return
 		}
+	}
+}
+
+func TestParseConstStatement(t *testing.T) {
+	input := `const x = 5`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statements. got=%d",
+			len(program.Statements))
+	}
+
+	stmt := program.Statements[0]
+	if !testLetStatement(t, stmt, "x") {
+		return
+	}
+
+	letStmt := stmt.(*ast.LetStatement)
+	if !letStmt.Name.Const {
+		t.Fatalf("const isn't true, got=%t", letStmt.Name.Const)
+	}
+
+	if !testLiteralExpression(t, letStmt.Value, 5) {
+		return
 	}
 }
 

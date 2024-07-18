@@ -61,7 +61,11 @@ let str = "This is a string"             // string
 let nil = null                           // null
 let obj = { "x": 0, "y": 0, "z": 0 }     // object/hashmap
 let arr = [1, 2, 3, 4, 5, 6, [0, 0, 0]]  // array 
-let fun = fn(a, b){ (a - b) * (a + b) }  // function
+let sub = fn(x, y) { x - y }             // function
+
+// const ensures that the variable's value cannot be changed after its initial assignment
+const int = 105329                          // const integer
+const fun = fn(a, b) { (a - b) * (a + b) }  // const function
 ```
 
 ### Arithmetic Expressions
@@ -83,7 +87,7 @@ function adds two variables together
 @param - int y
 @returns - int
 */
-let add2 = fn(x, y) {
+fn add2(x, y) {
 	// add x + y
 	return x + y
 }
@@ -108,6 +112,7 @@ print(greaterThan(a))
 
 ### Functions and Closures
 
+Using the return keyword is optional when returning an expression.
 ```
 fn multiply(x, y) { 
   x * y 
@@ -119,14 +124,14 @@ print(fn(x) { x }(5))
 # 5
 
 # closure
-let newAdder = fn(x) { return fn(y) { x + y } }
-let addTwo = newAdder(2)
+const newAdder = fn(x) { return fn(y) { x + y } }
+const addTwo = newAdder(2)
 print(addTwo(3))
 # 5
 
 # higher-order function
-let sub = fn(x, y) { x - y }
-let applyFn = fn(x, y, func) { func(x, y) }
+const sub = fn(x, y) { x - y }
+const applyFn = fn(x, y, func) { return func(x, y) }
 print(applyFn(2, 4, sub))
 # -2
 ```
