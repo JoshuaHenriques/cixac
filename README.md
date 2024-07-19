@@ -156,6 +156,13 @@ print(fib(15))
 ### Strings
 
 ```
+const name = "Joshua"
+print(name)
+# Joshua
+
+print(name[3] + name[5])
+# ha
+
 let makeGreeter = fn(greeting) { fn(name) { greeting + " " + name + "!" } }
 let hey = makeGreeter("Hey")
 print(hey("Joshua"))

@@ -536,44 +536,34 @@ func TestArrayIndexExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{
-			"[1, 2, 3][0]",
-			1,
+			"[1, 2, 3][0]", 1,
 		},
 		{
-			"[1, 2, 3][1]",
-			2,
+			"[1, 2, 3][1]", 2,
 		},
 		{
-			"[1, 2, 3][2]",
-			3,
+			"[1, 2, 3][2]", 3,
 		},
 		{
-			"let i = 0; [1][i];",
-			1,
+			"let i = 0; [1][i];", 1,
 		},
 		{
-			"[1, 2, 3][1 + 1];",
-			3,
+			"[1, 2, 3][1 + 1];", 3,
 		},
 		{
-			"let myArray = [1, 2, 3]; myArray[2];",
-			3,
+			"let myArray = [1, 2, 3]; myArray[2];", 3,
 		},
 		{
-			"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
-			6,
+			"let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];", 6,
 		},
 		{
-			"let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
-			2,
+			"let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]", 2,
 		},
 		{
-			"[1, 2, 3][3]",
-			nil,
+			"[1, 2, 3][3]", nil,
 		},
 		{
-			"[1, 2, 3][-1]",
-			nil,
+			"[1, 2, 3][-1]", nil,
 		},
 	}
 
@@ -629,32 +619,25 @@ func TestHashIndexExpressions(t *testing.T) {
 		expected interface{}
 	}{
 		{
-			`{"foo": 5}["foo"]`,
-			5,
+			`{"foo": 5}["foo"]`, 5,
 		},
 		{
-			`{"foo": 5}["bar"]`,
-			nil,
+			`{"foo": 5}["bar"]`, nil,
 		},
 		{
-			`let key = "foo"; {"foo": 5}[key]`,
-			5,
+			`let key = "foo"; {"foo": 5}[key]`, 5,
 		},
 		{
-			`{}["foo"]`,
-			nil,
+			`{}["foo"]`, nil,
 		},
 		{
-			`{5: 5}[5]`,
-			5,
+			`{5: 5}[5]`, 5,
 		},
 		{
-			`{true: 5}[true]`,
-			5,
+			`{true: 5}[true]`, 5,
 		},
 		{
-			`{false: 5}[false]`,
-			5,
+			`{false: 5}[false]`, 5,
 		},
 	}
 	for _, tt := range tests {
@@ -662,6 +645,45 @@ func TestHashIndexExpressions(t *testing.T) {
 		integer, ok := tt.expected.(int)
 		if ok {
 			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func TestStringIndexExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			"\"jump\"[0]", "j",
+		},
+		{
+			"\"blender\"[1]", "l",
+		},
+		{
+			"let str = \"string\"; let length = len(str); str[length-1];", "g",
+		},
+		{
+			"\"elden\"[1 + 1];", "d",
+		},
+		{
+			"let str = \"finished\"; str[0] + str[1] + str[2];", "fin",
+		},
+		{
+			"\"string\"[9]", nil,
+		},
+		{
+			"\"string\"[-1]", nil,
+		},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		char, ok := tt.expected.(string)
+		if ok {
+			testStringObject(t, evaluated, string(char))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -686,6 +708,20 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
 			result.Value, expected)
+		return false
+	}
+
+	return true
+}
+
+func testStringObject(t *testing.T, obj object.Object, expected string) bool {
+	result, ok := obj.(*object.String)
+	if !ok {
+		t.Errorf("object is not String. got=%T (%+v)", obj, obj)
+		return false
+	}
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%s, want=%s", result.Value, expected)
 		return false
 	}
 
