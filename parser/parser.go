@@ -309,8 +309,8 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	p.nextToken()
-	expression.Condition = p.parseExpression(LOWEST)
-
+	con := p.parseExpression(LOWEST)
+	ifcon := ast.IfCondition{Condition: con}
 	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
@@ -319,16 +319,41 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		return nil
 	}
 
-	expression.Consequence = p.parseBlockStatement()
+	ifcon.Consequence = p.parseBlockStatement()
 
-	if p.peekTokenIs(token.ELSE) {
+	expression.Conditions = make([]ast.IfCondition, 0)
+	expression.Conditions = append(expression.Conditions, ifcon)
+
+	for p.peekTokenIs(token.ELSE) {
 		p.nextToken()
 
-		if !p.expectPeek(token.LBRACE) {
-			return nil
-		}
+		if p.peekTokenIs(token.IF) {
+			p.nextToken()
 
-		expression.Alternative = p.parseBlockStatement()
+			if !p.expectPeek(token.LPAREN) {
+				return nil
+			}
+
+			p.nextToken()
+			elifcon := ast.IfCondition{Condition: p.parseExpression(LOWEST)}
+
+			if !p.expectPeek(token.RPAREN) {
+				return nil
+			}
+
+			if !p.expectPeek(token.LBRACE) {
+				return nil
+			}
+
+			elifcon.Consequence = p.parseBlockStatement()
+			expression.Conditions = append(expression.Conditions, elifcon)
+		} else {
+			if !p.expectPeek(token.LBRACE) {
+				return nil
+			}
+
+			expression.Alternative = p.parseBlockStatement()
+		}
 	}
 
 	return expression

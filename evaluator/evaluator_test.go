@@ -131,6 +131,7 @@ func TestIfElseExpression(t *testing.T) {
 		{"if (1 > 2) { 10 }", nil},
 		{"if (1 > 2) { 10 } else { 20 }", 20},
 		{"if (1 < 2) { 10 } else { 20 }", 10},
+		{"if (1 > 2) { 10 } else if (1 == 1) { 1 + 11 } else { 20 }", 12},
 		{"if (null) { 10 } else { 20 }", 20},
 		{"if (1 < 2) { null } else { 20 }", nil},
 	}

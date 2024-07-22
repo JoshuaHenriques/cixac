@@ -181,10 +181,14 @@ func (b *Boolean) expressionNode()      {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 func (b *Boolean) String() string       { return b.Token.Literal }
 
-type IfExpression struct {
-	Token       token.Token // The 'if' token
+type IfCondition struct {
 	Condition   Expression
 	Consequence *BlockStatement
+}
+
+type IfExpression struct {
+	Token       token.Token // The 'if' token
+	Conditions  []IfCondition
 	Alternative *BlockStatement
 }
 
@@ -193,10 +197,16 @@ func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
 func (ie *IfExpression) String() string {
 	var out bytes.Buffer
 
-	out.WriteString("if")
-	out.WriteString(ie.Condition.String())
-	out.WriteString(" ")
-	out.WriteString(ie.Consequence.String())
+	for i, con := range ie.Conditions {
+		if i == 0 {
+			out.WriteString("if")
+		} else {
+			out.WriteString("else if")
+		}
+		out.WriteString(con.Condition.String())
+		out.WriteString(" ")
+		out.WriteString(con.Consequence.String())
+	}
 
 	if ie.Alternative != nil {
 		out.WriteString("else ")

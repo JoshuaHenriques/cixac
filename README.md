@@ -101,9 +101,11 @@ let a = 18
 let greaterThan = fn(x) {
 	if (x > 20) {
 		return "x is greater"
-	} else {
-		"20 is greater" # return keyword is optional
-	}
+	} else if (x == 20) {
+    return "x equals 20"
+  } else {
+      "20 is greater" # return keyword is optional
+    }
 }
 
 print(greaterThan(a))
