@@ -12,38 +12,41 @@ func TestNextToken(t *testing.T) {
     let ten = 10;
 
     let add = fn(x, y) {
-      x + y;
-    };
-
-    let result = add(five, ten);
-    !*-/5;
-    5 < 10 > 5;
-
-    if (5 < 10) {
-      return true;
-    } else if (5 == 5) {
-      return true;
-    } else {
-      return false;
+      x + y
     }
 
-    10 == 10;
-    10 != 9;
+    let result = add(five, ten)
+    !*-/5
+    5 < 10 > 5
+
+    if (5 < 10) {
+      return true
+    } else if (5 == 5) {
+      return true
+    } else {
+      return false
+    }
+
+    10 == 10
+    10 != 9
     "foobar"
     "foo bar"
-    [1, 2];
+    [1, 2]
     {"foo": "bar"}
-    let nil = null;
-    10 >= 10;
-    11 <= 10;
+    let nil = null
+    10 >= 10
+    11 <= 10
     /*
     this is a multi-line comment
     */
-    true && false;
-    true || false;
+    true && false
+    true || false
     // this is a comment
-    5 % 4;
-    const x = 5;
+    5 % 4
+    const w = 5
+    const x = 5.5
+    const y = 5.
+    const z = .5
 `
 
 	tests := []struct {
@@ -73,9 +76,7 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "x"},
 		{token.PLUS, "+"},
 		{token.IDENT, "y"},
-		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "result"},
 		{token.ASSIGN, "="},
@@ -85,19 +86,16 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "ten"},
 		{token.RPAREN, ")"},
-		{token.SEMICOLON, ";"},
 		{token.BANG, "!"},
 		{token.ASTERISK, "*"},
 		{token.MINUS, "-"},
 		{token.SLASH, "/"},
 		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
 		{token.INT, "5"},
 		{token.LT, "<"},
 		{token.INT, "10"},
 		{token.GT, ">"},
 		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
 		{token.IF, "if"},
 		{token.LPAREN, "("},
 		{token.INT, "5"},
@@ -107,7 +105,6 @@ func TestNextToken(t *testing.T) {
 		{token.LBRACE, "{"},
 		{token.RETURN, "return"},
 		{token.TRUE, "true"},
-		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.ELSE, "else"},
 		{token.IF, "if"},
@@ -119,22 +116,18 @@ func TestNextToken(t *testing.T) {
 		{token.LBRACE, "{"},
 		{token.RETURN, "return"},
 		{token.TRUE, "true"},
-		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.ELSE, "else"},
 		{token.LBRACE, "{"},
 		{token.RETURN, "return"},
 		{token.FALSE, "false"},
-		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.INT, "10"},
 		{token.EQ, "=="},
 		{token.INT, "10"},
-		{token.SEMICOLON, ";"},
 		{token.INT, "10"},
 		{token.NOT_EQ, "!="},
 		{token.INT, "9"},
-		{token.SEMICOLON, ";"},
 		{token.STRING, "foobar"},
 		{token.STRING, "foo bar"},
 		{token.LBRACKET, "["},
@@ -142,7 +135,6 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.INT, "2"},
 		{token.RBRACKET, "]"},
-		{token.SEMICOLON, ";"},
 		{token.LBRACE, "{"},
 		{token.STRING, "foo"},
 		{token.COLON, ":"},
@@ -152,35 +144,40 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "nil"},
 		{token.ASSIGN, "="},
 		{token.NULL, "null"},
-		{token.SEMICOLON, ";"},
 		{token.INT, "10"},
 		{token.GT_EQ, ">="},
 		{token.INT, "10"},
-		{token.SEMICOLON, ";"},
 		{token.INT, "11"},
 		{token.LT_EQ, "<="},
 		{token.INT, "10"},
-		{token.SEMICOLON, ";"},
 		{token.COMMENT_START, "/*"},
 		{token.COMMENT_END, "*/"},
 		{token.TRUE, "true"},
 		{token.AND, "&&"},
 		{token.FALSE, "false"},
-		{token.SEMICOLON, ";"},
 		{token.TRUE, "true"},
 		{token.OR, "||"},
 		{token.FALSE, "false"},
-		{token.SEMICOLON, ";"},
 		{token.COMMENT, "//"},
 		{token.INT, "5"},
 		{token.MOD, "%"},
 		{token.INT, "4"},
-		{token.SEMICOLON, ";"},
+		{token.CONST, "const"},
+		{token.IDENT, "w"},
+		{token.ASSIGN, "="},
+		{token.INT, "5"},
 		{token.CONST, "const"},
 		{token.IDENT, "x"},
 		{token.ASSIGN, "="},
-		{token.INT, "5"},
-		{token.SEMICOLON, ";"},
+		{token.FLOAT, "5.5"},
+		{token.CONST, "const"},
+		{token.IDENT, "y"},
+		{token.ASSIGN, "="},
+		{token.FLOAT, "5.0"},
+		{token.CONST, "const"},
+		{token.IDENT, "z"},
+		{token.ASSIGN, "="},
+		{token.FLOAT, "0.5"},
 		{token.EOF, ""},
 	}
 

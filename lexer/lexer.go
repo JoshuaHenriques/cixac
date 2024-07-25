@@ -1,6 +1,8 @@
 package lexer
 
 import (
+	"strings"
+
 	"github.com/joshuahenriques/cixac/token"
 )
 
@@ -103,6 +105,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = l.readString()
 	case ':':
 		tok = newToken(token.COLON, l.ch)
+	case '.':
+		if isDigit(l.peekChar()) {
+			tok = l.readNumber()
+		}
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -112,8 +118,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
+			tok = l.readNumber()
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
@@ -161,12 +166,36 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) readNumber() string {
-	position := l.position
-	for isDigit(l.ch) {
+func (l *Lexer) readNumber() token.Token {
+	var literal strings.Builder
+	var isFloat bool
+
+	if l.ch == '.' {
+		literal.WriteString("0.")
 		l.readChar()
+		isFloat = true
 	}
-	return l.input[position:l.position]
+
+	for isDigit(l.ch) {
+		literal.WriteByte(l.ch)
+		l.readChar()
+		if l.ch == '.' && !isFloat {
+			literal.WriteByte(l.ch)
+			l.readChar()
+			isFloat = true
+			if !isDigit(l.ch) {
+				literal.WriteString("0")
+			}
+		}
+	}
+
+	tok := token.Token{Type: token.INT, Literal: literal.String()}
+
+	if isFloat {
+		tok.Type = token.FLOAT
+	}
+
+	return tok
 }
 
 func (l *Lexer) readString() string {

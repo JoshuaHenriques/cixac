@@ -3,6 +3,7 @@ package evaluator
 import (
 	"testing"
 
+	"github.com/beorn7/floats"
 	"github.com/joshuahenriques/cixac/lexer"
 	"github.com/joshuahenriques/cixac/object"
 	"github.com/joshuahenriques/cixac/parser"
@@ -37,6 +38,40 @@ func TestEvalIntegerExpression(t *testing.T) {
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
+
+func TestEvalFloatExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected float64
+	}{
+		{"5.5", 5.5},
+		{"5.", 5.0},
+		{".5", 0.5},
+		{"10.0", 10.0},
+		{"-5.0", -5.0},
+		{"-10.0", -10.0},
+		{"5.1 + 5.2 + 5.1 + 5.2 - 10", 10.6},
+		{"2.2 * 2.2 * 2.2 * 2.2 * 2.2", 51.536320},
+		{"-50.55 + 100.55 + -50.55", -0.55},
+		{"5.5 * 2.2 + 10.10", 22.20},
+		{"5.5 + 2.2 * 10.10", 27.72},
+		{"20.2 + 2.2 * -10.1", -2.02},
+		{"4.5 % 10.5", 4.50},
+		{"-4.5 % 10.55", 6.05},
+		{"10.5 % 4.4", 1.70},
+		{"10.5 % -4.5", -3.00},
+		{"55.55 / 2 * 2 + 10", 65.55},
+		{"2 * (5 + 10.55)", 31.10},
+		{"3 * 33.3 * 3 + 10", 309.70},
+		{"3 * (3.33 * 3.3) + 10", 42.967},
+		{"(5 + 10.95 * 2 + 15 / 3) * 2 + -10.55", 53.25},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testFloatObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -708,6 +743,22 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
+			result.Value, expected)
+		return false
+	}
+
+	return true
+}
+
+func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
+	result, ok := obj.(*object.Float)
+	if !ok {
+		t.Errorf("object is not Float. got=%T (%+v)", obj, obj)
+		return false
+	}
+
+	if !floats.AlmostEqual(result.Value, expected, 0.00001) {
+		t.Errorf("object has wrong value. got=%f, want=%f",
 			result.Value, expected)
 		return false
 	}

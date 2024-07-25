@@ -2,7 +2,9 @@ package evaluator
 
 import (
 	"fmt"
+	"math"
 
+	"github.com/beorn7/floats"
 	"github.com/joshuahenriques/cixac/ast"
 	"github.com/joshuahenriques/cixac/object"
 )
@@ -91,6 +93,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+
+	case *ast.FloatLiteral:
+		return &object.Float{Value: node.Value}
 
 	case *ast.StringLiteral:
 		return &object.String{Value: node.Value}
@@ -239,18 +244,27 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
-	if right.Type() != object.INTEGER_OBJ {
+	var obj object.Object
+
+	if right.Type() == object.INTEGER_OBJ {
+		obj = &object.Integer{Value: -right.(*object.Integer).Value}
+	} else if right.Type() == object.FLOAT_OBJ {
+		obj = &object.Float{Value: -right.(*object.Float).Value}
+	} else {
 		return newError("unknown operator: -%s", right.Type())
 	}
 
-	value := right.(*object.Integer).Value
-	return &object.Integer{Value: -value}
+	return obj
 }
 
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, left, right)
+	case (left.Type() == object.FLOAT_OBJ && right.Type() == object.FLOAT_OBJ) ||
+		(left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ) ||
+		(left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ):
+		return evalFloatInfixExpression(operator, left, right)
 	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, left, right)
 
@@ -300,6 +314,50 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleanObject(leftVal >= rightVal)
 	case "==":
 		return nativeBoolToBooleanObject(leftVal == rightVal)
+	case "!=":
+		return nativeBoolToBooleanObject(leftVal != rightVal)
+	default:
+		return newError("unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
+	}
+}
+
+func evalFloatInfixExpression(operator string, left, right object.Object) object.Object {
+	var leftVal, rightVal float64
+
+	if left.Type() == object.INTEGER_OBJ {
+		leftVal = float64(left.(*object.Integer).Value)
+	} else {
+		leftVal = left.(*object.Float).Value
+	}
+
+	if right.Type() == object.INTEGER_OBJ {
+		rightVal = float64(right.(*object.Integer).Value)
+	} else {
+		rightVal = right.(*object.Float).Value
+	}
+
+	switch operator {
+	case "+":
+		return &object.Float{Value: leftVal + rightVal}
+	case "-":
+		return &object.Float{Value: leftVal - rightVal}
+	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	case "/":
+		return &object.Float{Value: leftVal / rightVal}
+	case "%":
+		return &object.Float{Value: modLikePythonFloat(leftVal, rightVal)}
+	case "<":
+		return nativeBoolToBooleanObject(leftVal < rightVal)
+	case "<=":
+		return nativeBoolToBooleanObject((leftVal < rightVal) || floats.AlmostEqual(leftVal, rightVal, 0.00001))
+	case ">":
+		return nativeBoolToBooleanObject(leftVal > rightVal)
+	case ">=":
+		return nativeBoolToBooleanObject((leftVal > rightVal) || floats.AlmostEqual(leftVal, rightVal, 0.00001))
+	case "==":
+		return nativeBoolToBooleanObject(floats.AlmostEqual(leftVal, rightVal, 0.00001))
 	case "!=":
 		return nativeBoolToBooleanObject(leftVal != rightVal)
 	default:
@@ -527,6 +585,14 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 
 func modLikePythonInt(x, y int64) int64 {
 	res := x % y
+	if (res < 0 && y > 0) || (res > 0 && y < 0) {
+		return res + y
+	}
+	return res
+}
+
+func modLikePythonFloat(x, y float64) float64 {
+	res := math.Mod(x, y)
 	if (res < 0 && y > 0) || (res > 0 && y < 0) {
 		return res + y
 	}
