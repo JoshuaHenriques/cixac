@@ -359,7 +359,7 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	case "==":
 		return nativeBoolToBooleanObject(floats.AlmostEqual(leftVal, rightVal, 0.00001))
 	case "!=":
-		return nativeBoolToBooleanObject(leftVal != rightVal)
+		return nativeBoolToBooleanObject(!floats.AlmostEqual(leftVal, rightVal, 0.00001))
 	default:
 		return newError("unknown operator: %s %s %s",
 			left.Type(), operator, right.Type())
