@@ -141,6 +141,27 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		return evalInfixExpression(node.Operator, left, right)
 
+	case *ast.PostfixExpression:
+		ident, ok := node.Left.(*ast.Identifier)
+		if !ok {
+			return newError("Invalid left-hand expression for postfix operation")
+		}
+
+		obj, ok := env.Get(ident.Value)
+		if !ok {
+			return newError("Identifier %s doesn't exists", ident.Value)
+		}
+
+		if obj.Const {
+			return newError("Identifier %s is const and can't be reassigned", ident.Value)
+		}
+
+		updObj, retVal := evalPostfixExpression(node.Operator, obj.Object)
+		obj.Object = updObj
+		env.Set(ident.Value, obj)
+
+		return retVal
+
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 
@@ -228,6 +249,28 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	default:
 		return newError("unknown operator: %s%s", operator, right.Type())
 	}
+}
+
+func evalPostfixExpression(operator string, left object.Object) (object.Object, object.Object) {
+	if left.Type() == object.INTEGER_OBJ {
+		objVal := left.(*object.Integer)
+		if operator == "++" {
+			return &object.Integer{Value: objVal.Value + 1}, objVal
+		} else if operator == "--" {
+			return &object.Integer{Value: objVal.Value - 1}, objVal
+		}
+	} else if left.Type() == object.FLOAT_OBJ {
+		objVal := left.(*object.Float)
+		if operator == "++" {
+			return &object.Float{Value: objVal.Value + 1}, objVal
+		} else if operator == "--" {
+			return &object.Float{Value: objVal.Value - 1}, objVal
+		}
+	} else {
+		return newError("wrong type for postfix operator"), nil
+	}
+
+	return nil, nil
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {

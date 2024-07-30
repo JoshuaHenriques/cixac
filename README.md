@@ -211,6 +211,7 @@ print(obj[50])
 | --------- | ----------- |
 | ```[]``` | Subscript |
 | ```-``` | Unary minus |
+| ++ -- | Increment & Decrement |
 | ```* / %``` | Multiplication, Division, Modulo |
 | ```+ -``` | Addition, Subtraction |
 | ```< > <= >=``` | Comparison |

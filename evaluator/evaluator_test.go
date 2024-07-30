@@ -35,9 +35,9 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testIntegerObject(t, i, evaluated, tt.expected)
 	}
 }
 
@@ -147,6 +147,23 @@ func TestEvalNullExpression(t *testing.T) {
 	}
 }
 
+func TestIncrDecrOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let i = 5; i++; i", 6},
+		{"let j = 4; j--; j", 3},
+		{"let k = 5; k++", 5},
+		{"let l = 5; l--", 5},
+	}
+
+	for i, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, i, evaluated, tt.expected)
+	}
+}
+
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -183,11 +200,11 @@ func TestIfElseExpression(t *testing.T) {
 		{"if (1 < 2) { null } else { 20 }", nil},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, i, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -236,9 +253,9 @@ func TestReturnStatements(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testIntegerObject(t, i, evaluated, tt.expected)
 	}
 }
 
@@ -332,15 +349,22 @@ func TestErrorHandling(t *testing.T) {
 			`const a = 7; a = 10`,
 			`Identifier a is const and can't be reassigned`,
 		},
+		{
+			`const i = 5; i++`,
+			`Identifier i is const and can't be reassigned`,
+		},
+		{
+			`5++`,
+			`Invalid left-hand expression for postfix operation`,
+		},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 
 		errObj, ok := evaluated.(*object.Error)
 		if !ok {
-			t.Errorf("no error object returned. got=%T(%+v)",
-				evaluated, evaluated)
+			t.Errorf("[test: %d] no error object returned. got=%T(%+v)", i, evaluated, evaluated)
 			continue
 		}
 
@@ -362,8 +386,8 @@ func TestLetStatements(t *testing.T) {
 		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
 	}
 
-	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+	for i, tt := range tests {
+		testIntegerObject(t, i, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -378,8 +402,8 @@ func TestReassignStatements(t *testing.T) {
 		{"let a = 5; let b = a; let c = a + b + 5; c = c + 100; c;", 115},
 	}
 
-	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+	for i, tt := range tests {
+		testIntegerObject(t, i, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -421,8 +445,8 @@ func TestFunctionApplication(t *testing.T) {
 		{"fn adder(x, y) { return x + y }; adder(5, 5)", 10},
 	}
 
-	for _, tt := range tests {
-		testIntegerObject(t, testEval(tt.input), tt.expected)
+	for i, tt := range tests {
+		testIntegerObject(t, i, testEval(tt.input), tt.expected)
 	}
 }
 
@@ -442,7 +466,7 @@ let ourFunction = fn(x) {
 
 ourFunction(20) + x + y;`
 
-	testIntegerObject(t, testEval(input), 70)
+	testIntegerObject(t, 0, testEval(input), 70)
 }
 
 func TestClosures(t *testing.T) {
@@ -454,7 +478,7 @@ func TestClosures(t *testing.T) {
     let addTwo = newAdder(2)
     addTwo(2)`
 
-	testIntegerObject(t, testEval(input), 4)
+	testIntegerObject(t, 0, testEval(input), 4)
 }
 
 func TestStringLiteral(t *testing.T) {
@@ -523,12 +547,12 @@ func TestBuiltinFunctions(t *testing.T) {
 		// {`print("hey")`, nil},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 
 		switch expected := tt.expected.(type) {
 		case int:
-			testIntegerObject(t, evaluated, int64(expected))
+			testIntegerObject(t, i, evaluated, int64(expected))
 		case nil:
 			testNullObject(t, evaluated)
 		case string:
@@ -554,7 +578,7 @@ func TestBuiltinFunctions(t *testing.T) {
 			}
 
 			for i, expectedElem := range expected {
-				testIntegerObject(t, array.Elements[i], int64(expectedElem))
+				testIntegerObject(t, i, array.Elements[i], int64(expectedElem))
 			}
 		}
 	}
@@ -573,9 +597,9 @@ func TestArrayLiterals(t *testing.T) {
 		t.Fatalf("array has wrong num of elements. got=%d", len(result.Elements))
 	}
 
-	testIntegerObject(t, result.Elements[0], 1)
-	testIntegerObject(t, result.Elements[1], 4)
-	testIntegerObject(t, result.Elements[2], 6)
+	testIntegerObject(t, 0, result.Elements[0], 1)
+	testIntegerObject(t, 1, result.Elements[1], 4)
+	testIntegerObject(t, 2, result.Elements[2], 6)
 }
 
 func TestArrayIndexExpressions(t *testing.T) {
@@ -615,11 +639,11 @@ func TestArrayIndexExpressions(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, i, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -652,12 +676,14 @@ func TestHashLiterals(t *testing.T) {
 	if len(result.Pairs) != len(expected) {
 		t.Fatalf("Hash has wrong num of pairs. got=%d", len(result.Pairs))
 	}
+	testNum := 0
 	for expectedKey, expectedValue := range expected {
 		pair, ok := result.Pairs[expectedKey]
 		if !ok {
 			t.Errorf("no pair for given key in Pairs")
 		}
-		testIntegerObject(t, pair.Value, expectedValue)
+		testIntegerObject(t, testNum, pair.Value, expectedValue)
+		testNum++
 	}
 }
 
@@ -688,11 +714,11 @@ func TestHashIndexExpressions(t *testing.T) {
 			`{false: 5}[false]`, 5,
 		},
 	}
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, i, evaluated, int64(integer))
 		} else {
 			testNullObject(t, evaluated)
 		}
@@ -747,15 +773,14 @@ func testEval(input string) object.Object {
 	return Eval(program, env)
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+func testIntegerObject(t *testing.T, i int, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {
-		t.Errorf("object is not Integer. got=%T (%+v)", obj, obj)
+		t.Errorf("[test: %d] object is not Integer. got=%T (%+v)", i, obj, obj)
 		return false
 	}
 	if result.Value != expected {
-		t.Errorf("object has wrong value. got=%d, want=%d",
-			result.Value, expected)
+		t.Errorf("[test: %d] object has wrong value. got=%d, want=%d", i, result.Value, expected)
 		return false
 	}
 

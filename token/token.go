@@ -26,6 +26,9 @@ const (
 	SLASH    = "/"
 	MOD      = "%"
 
+	INCR = "++"
+	DECR = "--"
+
 	AND = "&&"
 	OR  = "||"
 

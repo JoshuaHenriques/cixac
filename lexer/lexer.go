@@ -32,9 +32,17 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
 	case '+':
-		tok = newToken(token.PLUS, l.ch)
+		if l.peekChar() == '+' {
+			tok = l.newTwoCharToken(token.INCR)
+		} else {
+			tok = newToken(token.PLUS, l.ch)
+		}
 	case '-':
-		tok = newToken(token.MINUS, l.ch)
+		if l.peekChar() == '-' {
+			tok = l.newTwoCharToken(token.DECR)
+		} else {
+			tok = newToken(token.MINUS, l.ch)
+		}
 	case '!':
 		if l.peekChar() == '=' {
 			tok = l.newTwoCharToken(token.NOT_EQ)

@@ -43,10 +43,14 @@ func TestNextToken(t *testing.T) {
     true || false
     // this is a comment
     5 % 4
+
     const w = 5
     const x = 5.5
     const y = 5.
     const z = .5
+    
+    i++
+    i--
 `
 
 	tests := []struct {
@@ -178,6 +182,10 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "z"},
 		{token.ASSIGN, "="},
 		{token.FLOAT, "0.5"},
+		{token.IDENT, "i"},
+		{token.INCR, "++"},
+		{token.IDENT, "i"},
+		{token.DECR, "--"},
 		{token.EOF, ""},
 	}
 

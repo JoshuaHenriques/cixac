@@ -228,6 +228,47 @@ func TestParsingPrefixExpressions(t *testing.T) {
 	}
 }
 
+func TestParsingPostfixExpressions(t *testing.T) {
+	prefixTests := []struct {
+		input    string
+		value    string
+		operator string
+	}{
+		{"i++", "i", "++"},
+		{"j--", "j", "--"},
+	}
+
+	for _, tt := range prefixTests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain %d statements. got=%d\n",
+				1, len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+				program.Statements[0])
+		}
+
+		exp, ok := stmt.Expression.(*ast.PostfixExpression)
+		if !ok {
+			t.Fatalf("stmt is not ast.PostfixExpression. got=%T", stmt.Expression)
+		}
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operator is not '%s'. got=%s",
+				tt.operator, exp.Operator)
+		}
+		if !testLiteralExpression(t, exp.Left, tt.value) {
+			return
+		}
+	}
+}
+
 func TestParsingInfixExpressions(t *testing.T) {
 	infixTests := []struct {
 		input      string
