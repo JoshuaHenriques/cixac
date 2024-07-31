@@ -252,21 +252,26 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 }
 
 func evalPostfixExpression(operator string, left object.Object) (object.Object, object.Object) {
-	if left.Type() == object.INTEGER_OBJ {
+	switch left.Type() {
+	case object.INTEGER_OBJ:
 		objVal := left.(*object.Integer)
-		if operator == "++" {
+		switch operator {
+		case "++":
 			return &object.Integer{Value: objVal.Value + 1}, objVal
-		} else if operator == "--" {
+		case "--":
 			return &object.Integer{Value: objVal.Value - 1}, objVal
 		}
-	} else if left.Type() == object.FLOAT_OBJ {
+
+	case object.FLOAT_OBJ:
 		objVal := left.(*object.Float)
-		if operator == "++" {
+		switch operator {
+		case "++":
 			return &object.Float{Value: objVal.Value + 1}, objVal
-		} else if operator == "--" {
+		case "--":
 			return &object.Float{Value: objVal.Value - 1}, objVal
 		}
-	} else {
+
+	default:
 		return newError("wrong type for postfix operator"), nil
 	}
 
@@ -289,11 +294,12 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	var obj object.Object
 
-	if right.Type() == object.INTEGER_OBJ {
+	switch right.Type() {
+	case object.INTEGER_OBJ:
 		obj = &object.Integer{Value: -right.(*object.Integer).Value}
-	} else if right.Type() == object.FLOAT_OBJ {
+	case object.FLOAT_OBJ:
 		obj = &object.Float{Value: -right.(*object.Float).Value}
-	} else {
+	default:
 		return newError("unknown operator: -%s", right.Type())
 	}
 
