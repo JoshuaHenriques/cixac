@@ -352,7 +352,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "/":
 		return &object.Integer{Value: leftVal / rightVal}
 	case "%":
-		return &object.Integer{Value: modLikePython[int64](leftVal, rightVal)}
+		return &object.Integer{Value: modLikePython(leftVal, rightVal)}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case "<=":
@@ -396,7 +396,7 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	case "/":
 		return &object.Float{Value: leftVal / rightVal}
 	case "%":
-		return &object.Float{Value: modLikePython[float64](leftVal, rightVal)}
+		return &object.Float{Value: modLikePython(leftVal, rightVal)}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case "<=":
