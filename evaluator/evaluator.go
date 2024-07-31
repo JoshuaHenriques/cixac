@@ -352,7 +352,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "/":
 		return &object.Integer{Value: leftVal / rightVal}
 	case "%":
-		return &object.Integer{Value: modLikePythonInt(leftVal, rightVal)}
+		return &object.Integer{Value: modLikePython[int64](leftVal, rightVal)}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case "<=":
@@ -396,7 +396,7 @@ func evalFloatInfixExpression(operator string, left, right object.Object) object
 	case "/":
 		return &object.Float{Value: leftVal / rightVal}
 	case "%":
-		return &object.Float{Value: modLikePythonFloat(leftVal, rightVal)}
+		return &object.Float{Value: modLikePython[float64](leftVal, rightVal)}
 	case "<":
 		return nativeBoolToBooleanObject(leftVal < rightVal)
 	case "<=":
@@ -632,18 +632,23 @@ func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Obje
 	return &object.Hash{Pairs: pairs}
 }
 
-func modLikePythonInt(x, y int64) int64 {
-	res := x % y
-	if (res < 0 && y > 0) || (res > 0 && y < 0) {
-		return res + y
-	}
-	return res
+type Number interface {
+	~int64 | ~float64
 }
 
-func modLikePythonFloat(x, y float64) float64 {
-	res := math.Mod(x, y)
-	if (res < 0 && y > 0) || (res > 0 && y < 0) {
+func modLikePython[T Number](x, y T) T {
+	var res T
+
+	switch any(x).(type) {
+	case int64:
+		res = T(any(x).(int64) % any(y).(int64))
+	case float64:
+		res = T(math.Mod(any(x).(float64), any(y).(float64)))
+	}
+
+	if res < 0 && y > 0 || (res > 0 && y < 0) {
 		return res + y
 	}
+
 	return res
 }
