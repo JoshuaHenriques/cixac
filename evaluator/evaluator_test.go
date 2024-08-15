@@ -391,6 +391,20 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
+func TestForLoopStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{`let j = 0; for (let i = 0; i < 5; i = i + 1) { j++ }; j`, 5},
+		{`let j = 0; for (let i = 0; i < 5; i++) { j++ }; j`, 5},
+	}
+
+	for i, tt := range tests {
+		testIntegerObject(t, i, testEval(tt.input), tt.expected)
+	}
+}
+
 func TestReassignStatements(t *testing.T) {
 	tests := []struct {
 		input    string

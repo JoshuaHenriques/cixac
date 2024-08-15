@@ -244,6 +244,35 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type ForLoopStatement struct {
+	Token          token.Token // the for token
+	Initialization *LetStatement
+	Condition      Expression
+	Update         Node // *ReassignStatement | *PostfixExpression
+	Body           *BlockStatement
+}
+
+func (fl *ForLoopStatement) statementNode()       {}
+func (fl *ForLoopStatement) TokenLiteral() string { return fl.Token.Literal }
+func (fl *ForLoopStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString(" (")
+	out.WriteString(fl.Initialization.String() + " ")
+	out.WriteString(fl.Condition.String() + " ")
+	out.WriteString(fl.Update.String() + " ")
+	out.WriteString(") ")
+
+	out.WriteString("{\n")
+	for _, s := range fl.Body.Statements {
+		out.WriteString(s.String())
+	}
+	out.WriteString("\n}")
+
+	return out.String()
+}
+
 type BlockStatement struct {
 	Token      token.Token // the { token
 	Statements []Statement
@@ -395,13 +424,13 @@ func (rs *ReassignStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(rs.Name.String())
-	out.WriteString(" " + rs.Token.Literal + " ")
+	out.WriteString(" ")
+	out.WriteString(rs.Token.Literal)
+	out.WriteString(" ")
 
 	if rs.Value != nil {
 		out.WriteString(rs.Value.String())
 	}
-
-	out.WriteString(";")
 
 	return out.String()
 }

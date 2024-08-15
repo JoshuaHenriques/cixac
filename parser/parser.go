@@ -162,6 +162,8 @@ func (p *Parser) parseStatement() ast.Statement {
 			return p.parseFunctionDeclaration()
 		}
 		return p.parseExpressionStatement()
+	case token.FOR:
+		return p.parseForLoopStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -404,6 +406,51 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	}
 
 	return expression
+}
+
+func (p *Parser) parseForLoopStatement() *ast.ForLoopStatement {
+	forLoop := &ast.ForLoopStatement{Token: p.curToken}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LET) {
+		return nil
+	}
+
+	forLoop.Initialization = p.parseLetStatement(false)
+
+	if !p.curTokenIs(token.SEMICOLON) {
+		return nil
+	}
+	p.nextToken()
+
+	forLoop.Condition = p.parseExpression(LOWEST)
+	p.nextToken()
+
+	if !p.curTokenIs(token.SEMICOLON) {
+		return nil
+	}
+	p.nextToken()
+
+	if p.peekTokenIs(token.INCR) || p.peekTokenIs(token.DECR) {
+		forLoop.Update = p.parseExpression(LOWEST)
+	} else {
+		forLoop.Update = p.parseReassignStatement()
+	}
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	forLoop.Body = p.parseBlockStatement()
+
+	return forLoop
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {

@@ -90,7 +90,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		env.Set(node.Name.Value, object.ObjectMeta{Object: val})
 
-	// Expressions
+	case *ast.ForLoopStatement:
+		evalForLoop(node, env)
+
+		// Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 
@@ -426,6 +429,16 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleanObject(leftVal || rightVal)
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+}
+
+func evalForLoop(fl *ast.ForLoopStatement, env *object.Environment) {
+	forEnv := object.NewEnclosedEnvironment(env)
+	Eval(fl.Initialization, forEnv)
+
+	for isTruthy(Eval(fl.Condition, forEnv)) {
+		evalBlockStatement(fl.Body, env)
+		Eval(fl.Update, forEnv)
 	}
 }
 

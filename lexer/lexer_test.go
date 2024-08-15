@@ -51,6 +51,10 @@ func TestNextToken(t *testing.T) {
     
     i++
     i--
+
+    for (let i = 0; i < 5; i++) {
+      i
+    }
 `
 
 	tests := []struct {
@@ -186,6 +190,23 @@ func TestNextToken(t *testing.T) {
 		{token.INCR, "++"},
 		{token.IDENT, "i"},
 		{token.DECR, "--"},
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.LET, "let"},
+		{token.IDENT, "i"},
+		{token.ASSIGN, "="},
+		{token.INT, "0"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "i"},
+		{token.LT, "<"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "i"},
+		{token.INCR, "++"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.IDENT, "i"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 

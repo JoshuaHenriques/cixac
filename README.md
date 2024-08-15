@@ -115,6 +115,19 @@ print(greaterThan(a))
 # 20 is greater
 ```
 
+### For Loop
+
+```
+let j = 0
+
+for (let i = 0; i < 5; i++) {
+  j++
+}
+
+print(j)
+# 5
+```
+
 ### Functions and Closures
 
 Using the return keyword is optional when returning an expression.
