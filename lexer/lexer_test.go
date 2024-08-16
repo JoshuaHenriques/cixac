@@ -54,6 +54,8 @@ func TestNextToken(t *testing.T) {
 
     for (let i = 0; i < 5; i++) {
       i
+      break
+      continue
     }
 `
 
@@ -206,6 +208,8 @@ func TestNextToken(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.IDENT, "i"},
+		{token.BREAK, "break"},
+		{token.CONTINUE, "continue"},
 		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}

@@ -118,13 +118,19 @@ print(greaterThan(a))
 ### For Loop
 
 ```
-let j = 0
+for (let i = 0; i < 10; i++) {
+  if (i % 2 == 0) {
+    continue // skip even numbers
+  }
 
-for (let i = 0; i < 5; i++) {
-  j++
+  print(i)
+
+  if (i >= 5) {
+    break
+  }
 }
-
-print(j)
+# 1
+# 3
 # 5
 ```
 

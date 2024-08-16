@@ -273,6 +273,30 @@ func (fl *ForLoopStatement) String() string {
 	return out.String()
 }
 
+type BreakStatement struct {
+	Token token.Token // the break token
+}
+
+func (bs *BreakStatement) statementNode()       {}
+func (bs *BreakStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BreakStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(bs.TokenLiteral())
+	return out.String()
+}
+
+type ContinueStatement struct {
+	Token token.Token // the continue token
+}
+
+func (cs *ContinueStatement) statementNode()       {}
+func (cs *ContinueStatement) TokenLiteral() string { return cs.Token.Literal }
+func (cs *ContinueStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(cs.TokenLiteral())
+	return out.String()
+}
+
 type BlockStatement struct {
 	Token      token.Token // the { token
 	Statements []Statement

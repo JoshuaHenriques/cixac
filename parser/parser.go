@@ -164,6 +164,10 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseExpressionStatement()
 	case token.FOR:
 		return p.parseForLoopStatement()
+	case token.BREAK:
+		return p.parseBreakStatement()
+	case token.CONTINUE:
+		return p.parseContinueStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -451,6 +455,14 @@ func (p *Parser) parseForLoopStatement() *ast.ForLoopStatement {
 	forLoop.Body = p.parseBlockStatement()
 
 	return forLoop
+}
+
+func (p *Parser) parseBreakStatement() *ast.BreakStatement {
+	return &ast.BreakStatement{Token: p.curToken}
+}
+
+func (p *Parser) parseContinueStatement() *ast.ContinueStatement {
+	return &ast.ContinueStatement{Token: p.curToken}
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {

@@ -357,6 +357,14 @@ func TestErrorHandling(t *testing.T) {
 			`5++`,
 			`Invalid left-hand expression for postfix operation`,
 		},
+		{
+			`break`,
+			`break not in for statement`,
+		},
+		{
+			`continue`,
+			`continue not in for statement`,
+		},
 	}
 
 	for i, tt := range tests {
@@ -403,6 +411,16 @@ func TestForLoopStatements(t *testing.T) {
 	for i, tt := range tests {
 		testIntegerObject(t, i, testEval(tt.input), tt.expected)
 	}
+}
+
+func TestBreakStatement(t *testing.T) {
+	input := `let j = 0; for (let i = 0; i < 5; i++) { j++; break; }; j`
+	testIntegerObject(t, 1, testEval(input), 1)
+}
+
+func TestContinueStatement(t *testing.T) {
+	input := `let j = 0; for (let i = 0; i < 5; i++) { continue; j++; } j`
+	testIntegerObject(t, 1, testEval(input), 0)
 }
 
 func TestReassignStatements(t *testing.T) {

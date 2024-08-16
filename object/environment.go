@@ -33,6 +33,12 @@ func (e *Environment) Set(name string, obj ObjectMeta) {
 	e.store[name] = obj
 }
 
+func (e *Environment) SetOutsideScope(name string, obj ObjectMeta) {
+	if e.outer != nil {
+		e.outer.store[name] = obj
+	}
+}
+
 func (e *Environment) ExistsInScope(name string) bool {
 	_, ok := e.store[name]
 	return ok
