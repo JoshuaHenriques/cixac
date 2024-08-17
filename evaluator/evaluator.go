@@ -91,7 +91,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 
-		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(node.Name.Value) {
+		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(node.Name.Value) && env.ExistsOutsideScope(node.Name.Value) {
 			env.SetOutsideScope(node.Name.Value, object.ObjectMeta{Object: val})
 			return nil
 		}
@@ -180,7 +180,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		val, retVal := evalPostfixExpression(node.Operator, obj.Object)
 
-		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(ident.Value) {
+		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(ident.Value) && env.ExistsOutsideScope(ident.Value) {
 			env.SetOutsideScope(ident.Value, object.ObjectMeta{Object: val})
 			return retVal
 		}

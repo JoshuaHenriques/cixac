@@ -43,3 +43,8 @@ func (e *Environment) ExistsInScope(name string) bool {
 	_, ok := e.store[name]
 	return ok
 }
+
+func (e *Environment) ExistsOutsideScope(name string) bool {
+	_, ok := e.outer.store[name]
+	return ok
+}
