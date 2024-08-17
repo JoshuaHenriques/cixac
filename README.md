@@ -134,6 +134,18 @@ for (let i = 0; i < 10; i++) {
 # 5
 ```
 
+### While Loop
+
+```
+let i = 0
+
+while (i < 5) {
+  i = i + 1
+}
+
+# 5
+```
+
 ### Functions and Closures
 
 Using the return keyword is optional when returning an expression.

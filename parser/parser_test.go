@@ -1156,6 +1156,41 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+func TestWhileLoopStatement(t *testing.T) {
+	input := `while (i < 10) { i }`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.WhileStatement)
+	if !ok {
+		t.Errorf("stmt not *ast.WhileStatement. got=%T", stmt)
+	}
+
+	if !testInfixExpression(t, stmt.Condition, "i", "<", 10) {
+		return
+	}
+
+	if len(stmt.Body.Statements) != 1 {
+		t.Errorf("stmt.Body.Statements is not 1 statements. got=%d\n", len(stmt.Body.Statements))
+	}
+
+	bodyStmt, ok := stmt.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("stmt.Body.Statements[0] is not ast.ExpressionStatement. got=%T", stmt.Body.Statements[0])
+	}
+
+	if !testIdentifier(t, bodyStmt.Expression, "i") {
+		return
+	}
+}
+
 func TestForLoopStatement(t *testing.T) {
 	tests := []struct {
 		input string
@@ -1172,8 +1207,7 @@ func TestForLoopStatement(t *testing.T) {
 		checkParserErrors(t, p)
 
 		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
-				len(program.Statements))
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
 		}
 
 		stmt, ok := program.Statements[0].(*ast.ForLoopStatement)

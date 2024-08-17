@@ -168,6 +168,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseBreakStatement()
 	case token.CONTINUE:
 		return p.parseContinueStatement()
+	case token.WHILE:
+		return p.parseWhileStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -463,6 +465,29 @@ func (p *Parser) parseBreakStatement() *ast.BreakStatement {
 
 func (p *Parser) parseContinueStatement() *ast.ContinueStatement {
 	return &ast.ContinueStatement{Token: p.curToken}
+}
+
+func (p *Parser) parseWhileStatement() *ast.WhileStatement {
+	while := &ast.WhileStatement{Token: p.curToken}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	p.nextToken()
+
+	while.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	while.Body = p.parseBlockStatement()
+
+	return while
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {

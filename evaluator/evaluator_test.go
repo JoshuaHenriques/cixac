@@ -413,6 +413,11 @@ func TestForLoopStatements(t *testing.T) {
 	}
 }
 
+func TestWhileStatement(t *testing.T) {
+	input := `let i = 0; while (i < 5) { i++ }; i`
+	testIntegerObject(t, 1, testEval(input), 5)
+}
+
 func TestBreakStatement(t *testing.T) {
 	input := `let j = 0; for (let i = 0; i < 5; i++) { j++; break; }; j`
 	testIntegerObject(t, 1, testEval(input), 1)

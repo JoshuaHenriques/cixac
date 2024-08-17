@@ -33,6 +33,10 @@ func (e *Environment) Set(name string, obj ObjectMeta) {
 	e.store[name] = obj
 }
 
+func (e *Environment) Delete(name string) {
+	delete(e.store, name)
+}
+
 func (e *Environment) SetOutsideScope(name string, obj ObjectMeta) {
 	if e.outer != nil {
 		e.outer.store[name] = obj

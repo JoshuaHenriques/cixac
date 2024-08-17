@@ -244,6 +244,31 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type WhileStatement struct {
+	Token     token.Token // the while token
+	Condition Expression
+	Body      *BlockStatement
+}
+
+func (w *WhileStatement) statementNode()       {}
+func (w *WhileStatement) TokenLiteral() string { return w.Token.Literal }
+func (w *WhileStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(w.TokenLiteral())
+	out.WriteString(" (")
+	out.WriteString(w.Condition.String())
+	out.WriteString(") ")
+
+	out.WriteString("{\n")
+	for _, s := range w.Body.Statements {
+		out.WriteString(s.String())
+	}
+	out.WriteString("\n}")
+
+	return out.String()
+}
+
 type ForLoopStatement struct {
 	Token          token.Token // the for token
 	Initialization *LetStatement

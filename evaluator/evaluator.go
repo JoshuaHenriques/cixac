@@ -11,11 +11,13 @@ import (
 
 // Avoid creating object.Boolean & object.Null every time
 var (
-	NULL     = &object.Null{}
-	TRUE     = &object.Boolean{Value: true}
-	FALSE    = &object.Boolean{Value: false}
-	BREAK    = &object.Break{}
-	CONTINUE = &object.Continue{}
+	NULL           = &object.Null{}
+	TRUE           = &object.Boolean{Value: true}
+	FALSE          = &object.Boolean{Value: false}
+	BREAK          = &object.Break{}
+	CONTINUE       = &object.Continue{}
+	ENV_FOR_FLAG   = "ENV_FOR_FLAG"
+	ENV_WHILE_FLAG = "ENV_WHILE_FLAG"
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -93,23 +95,28 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 
-		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(node.Name.Value) && env.ExistsOutsideScope(node.Name.Value) {
+		if env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(node.Name.Value) && env.ExistsOutsideScope(node.Name.Value) {
 			env.SetOutsideScope(node.Name.Value, object.ObjectMeta{Object: val})
 			return nil
 		}
 		env.Set(node.Name.Value, object.ObjectMeta{Object: val})
 
+		return val
+
 	case *ast.ForLoopStatement:
-		return evalForLoop(node, env)
+		return evalForLoopStatement(node, env)
+
+	case *ast.WhileStatement:
+		return evalWhileStatement(node, env)
 
 	case *ast.BreakStatement:
-		if !env.ExistsInScope("ENV_FOR_FLAG") {
+		if !env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(ENV_WHILE_FLAG) {
 			return newError("break not in for statement")
 		}
 		return BREAK
 
 	case *ast.ContinueStatement:
-		if !env.ExistsInScope("ENV_FOR_FLAG") {
+		if !env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(ENV_WHILE_FLAG) {
 			return newError("continue not in for statement")
 		}
 		return CONTINUE
@@ -182,7 +189,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		val, retVal := evalPostfixExpression(node.Operator, obj.Object)
 
-		if env.ExistsInScope("ENV_FOR_FLAG") && !env.ExistsInScope(ident.Value) && env.ExistsOutsideScope(ident.Value) {
+		if env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(ident.Value) && env.ExistsOutsideScope(ident.Value) {
 			env.SetOutsideScope(ident.Value, object.ObjectMeta{Object: val})
 			return retVal
 		}
@@ -243,7 +250,8 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
 
-	forLoopFlag := env.ExistsInScope("ENV_FOR_FLAG")
+	forLoopFlag := env.ExistsInScope(ENV_FOR_FLAG)
+	whileLoopFlag := env.ExistsInScope(ENV_WHILE_FLAG)
 	for _, statement := range block.Statements {
 		result = Eval(statement, env)
 
@@ -253,11 +261,11 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 				return result
 			}
 
-			if forLoopFlag && (rt == object.BREAK_OBJ || rt == object.CONTINUE_OBJ) {
+			if (forLoopFlag || whileLoopFlag) && (rt == object.BREAK_OBJ || rt == object.CONTINUE_OBJ) {
 				return result
 			}
 
-			if !forLoopFlag && (rt == object.BREAK_OBJ || rt == object.CONTINUE_OBJ) {
+			if (!forLoopFlag && !whileLoopFlag) && (rt == object.BREAK_OBJ || rt == object.CONTINUE_OBJ) {
 				return newError("%s not in loop", rt)
 			}
 		}
@@ -466,13 +474,13 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
-func evalForLoop(fl *ast.ForLoopStatement, env *object.Environment) object.Object {
+func evalForLoopStatement(fl *ast.ForLoopStatement, env *object.Environment) object.Object {
 	var result object.Object
 
 	forEnv := object.NewEnclosedEnvironment(env)
 	Eval(fl.Initialization, forEnv)
 
-	forEnv.Set("ENV_FOR_FLAG", object.ObjectMeta{Object: TRUE})
+	forEnv.Set(ENV_FOR_FLAG, object.ObjectMeta{Object: TRUE})
 	for isTruthy(Eval(fl.Condition, forEnv)) {
 		result = Eval(fl.Body, forEnv)
 
@@ -483,7 +491,23 @@ func evalForLoop(fl *ast.ForLoopStatement, env *object.Environment) object.Objec
 		Eval(fl.Update, forEnv)
 	}
 
-	forEnv.Set("ENV_FOR_FLAG", object.ObjectMeta{Object: FALSE})
+	forEnv.Delete(ENV_FOR_FLAG)
+	return result
+}
+
+func evalWhileStatement(w *ast.WhileStatement, env *object.Environment) object.Object {
+	var result object.Object
+
+	env.Set(ENV_WHILE_FLAG, object.ObjectMeta{Object: TRUE})
+	for isTruthy(Eval(w.Condition, env)) {
+		result = Eval(w.Body, env)
+
+		if result.Type() == object.BREAK_OBJ {
+			break
+		}
+	}
+
+	env.Delete(ENV_WHILE_FLAG)
 	return result
 }
 
