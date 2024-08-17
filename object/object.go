@@ -191,24 +191,12 @@ func (h *Hash) Inspect() string {
 	return out.String()
 }
 
-type Break struct {
-	Value string
-}
+type Break struct{}
 
 func (b *Break) Type() ObjectType { return BREAK_OBJ }
-func (b *Break) Inspect() string {
-	var out bytes.Buffer
-	out.WriteString("break")
-	return out.String()
-}
+func (b *Break) Inspect() string  { return "" }
 
-type Continue struct {
-	Value string
-}
+type Continue struct{}
 
 func (c *Continue) Type() ObjectType { return CONTINUE_OBJ }
-func (c *Continue) Inspect() string {
-	var out bytes.Buffer
-	out.WriteString("continue")
-	return out.String()
-}
+func (c *Continue) Inspect() string  { return "" }

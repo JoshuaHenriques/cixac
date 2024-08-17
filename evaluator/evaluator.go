@@ -14,8 +14,8 @@ var (
 	NULL     = &object.Null{}
 	TRUE     = &object.Boolean{Value: true}
 	FALSE    = &object.Boolean{Value: false}
-	BREAK    = &object.Break{Value: "break"}
-	CONTINUE = &object.Continue{Value: "continue"}
+	BREAK    = &object.Break{}
+	CONTINUE = &object.Continue{}
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -37,7 +37,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 
-		return &object.ReturnValue{Value: val}
+		if val != BREAK || val != CONTINUE {
+			return &object.ReturnValue{Value: val}
+		}
 
 	case *ast.LetStatement:
 		if ExistsInBuiltins(node.Name.Value) {
@@ -480,8 +482,8 @@ func evalForLoop(fl *ast.ForLoopStatement, env *object.Environment) object.Objec
 
 		Eval(fl.Update, forEnv)
 	}
-	forEnv.Set("ENV_FOR_FLAG", object.ObjectMeta{Object: FALSE})
 
+	forEnv.Set("ENV_FOR_FLAG", object.ObjectMeta{Object: FALSE})
 	return result
 }
 
