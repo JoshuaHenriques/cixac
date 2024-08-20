@@ -1,6 +1,6 @@
-# The Cixac Programming Language (WIP)
+# The Cixac Programming Language
 
-The Cixac programming language is a passion project that I decided to pursue with inspiration and guidance from Thorsten Ball's [book](https://interpreterbook.com/). Creating this interpreter is the first (out of three) implementation of my object-oriented dynamic programming language.
+The Cixac programming language — pronounced 'SIGH-zack' — is a passion project that I decided to pursue with inspiration and guidance from Thorsten Ball's [book](https://interpreterbook.com/). Creating this interpreter is the first (out of three) implementation of my object-oriented dynamic programming language.
 
 **Note:** The documentation for the Cixac programming language is currently under construction.
 
