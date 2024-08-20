@@ -1311,6 +1311,10 @@ func TestParseReassignStatement(t *testing.T) {
 		{"y = false", "y", false},
 		{"foobar = z", "foobar", "z"},
 		{"nil = true", "nil", true},
+		{"i += 1", "i", 1},
+		{"i -= 1", "i", 1},
+		{"i *= 1", "i", 1},
+		{"i /= 1", "i", 1},
 	}
 
 	for _, tt := range tests {

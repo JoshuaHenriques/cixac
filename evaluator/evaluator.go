@@ -95,6 +95,33 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 
+		switch node.TokenLiteral() {
+		case "+=":
+			if obj.Object.Type() == object.INTEGER_OBJ {
+				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value + val.(*object.Integer).Value
+			} else if obj.Object.Type() == object.FLOAT_OBJ {
+				val.(*object.Float).Value = obj.Object.(*object.Float).Value + val.(*object.Float).Value
+			}
+		case "-=":
+			if obj.Object.Type() == object.INTEGER_OBJ {
+				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value - val.(*object.Integer).Value
+			} else if obj.Object.Type() == object.FLOAT_OBJ {
+				val.(*object.Float).Value = obj.Object.(*object.Float).Value - val.(*object.Float).Value
+			}
+		case "*=":
+			if obj.Object.Type() == object.INTEGER_OBJ {
+				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value * val.(*object.Integer).Value
+			} else if obj.Object.Type() == object.FLOAT_OBJ {
+				val.(*object.Float).Value = obj.Object.(*object.Float).Value * val.(*object.Float).Value
+			}
+		case "/=":
+			if obj.Object.Type() == object.INTEGER_OBJ {
+				val = &object.Float{Value: float64(obj.Object.(*object.Integer).Value / val.(*object.Integer).Value)}
+			} else if obj.Object.Type() == object.FLOAT_OBJ {
+				val.(*object.Float).Value = obj.Object.(*object.Float).Value / val.(*object.Float).Value
+			}
+		}
+
 		if env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(node.Name.Value) && env.ExistsOutsideScope(node.Name.Value) {
 			env.SetOutsideScope(node.Name.Value, object.ObjectMeta{Object: val})
 			return nil

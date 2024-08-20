@@ -58,6 +58,11 @@ func TestNextToken(t *testing.T) {
     }
 
     while (i < 10) {}
+
+    +=
+    -=
+    *=
+    /=
 `
 
 	tests := []struct {
@@ -219,6 +224,10 @@ func TestNextToken(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.RBRACE, "}"},
+		{token.ADD_ASSIGN, "+="},
+		{token.SUB_ASSIGN, "-="},
+		{token.MUL_ASSIGN, "*="},
+		{token.DIV_ASSIGN, "/="},
 		{token.EOF, ""},
 	}
 

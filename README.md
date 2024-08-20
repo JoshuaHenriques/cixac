@@ -140,7 +140,7 @@ for (let i = 0; i < 10; i++) {
 let i = 0
 
 while (i < 5) {
-  i = i + 1
+  i += 1
 }
 
 print(i)
@@ -244,6 +244,7 @@ print(obj[50])
 | ```[]``` | Subscript |
 | ```-``` | Unary minus |
 | ++ -- | Increment & Decrement |
+| += -= *= /= | Compound Assignment |
 | ```* / %``` | Multiplication, Division, Modulo |
 | ```+ -``` | Addition, Subtraction |
 | ```< > <= >=``` | Comparison |

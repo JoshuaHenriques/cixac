@@ -18,7 +18,12 @@ const (
 	STRING = "STRING"
 
 	// Operators
-	ASSIGN   = "="
+	ASSIGN     = "="
+	ADD_ASSIGN = "+="
+	SUB_ASSIGN = "-="
+	MUL_ASSIGN = "*="
+	DIV_ASSIGN = "/="
+
 	PLUS     = "+"
 	MINUS    = "-"
 	BANG     = "!"

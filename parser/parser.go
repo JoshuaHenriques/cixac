@@ -153,7 +153,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	case token.IDENT:
-		if p.peekTokenIs(token.ASSIGN) {
+		if p.peekTokenIs(token.ASSIGN) || p.peekTokenIs(token.ADD_ASSIGN) || p.peekTokenIs(token.SUB_ASSIGN) ||
+			p.peekTokenIs(token.MUL_ASSIGN) || p.peekTokenIs(token.DIV_ASSIGN) {
 			return p.parseReassignStatement()
 		}
 		return p.parseExpressionStatement()

@@ -69,9 +69,9 @@ func TestEvalFloatExpression(t *testing.T) {
 		{"(5 + 10.95 * 2 + 15 / 3) * 2 + -10.55", 53.25},
 	}
 
-	for _, tt := range tests {
+	for i, tt := range tests {
 		evaluated := testEval(tt.input)
-		testFloatObject(t, evaluated, tt.expected)
+		testFloatObject(t, i, evaluated, tt.expected)
 	}
 }
 
@@ -404,6 +404,7 @@ func TestForLoopStatements(t *testing.T) {
 		input    string
 		expected int64
 	}{
+		{`let j = 0; for (let i = 0; i < 5; i += 1) { j++ }; j`, 5},
 		{`let j = 0; for (let i = 0; i < 5; i = i + 1) { j++ }; j`, 5},
 		{`let j = 0; for (let i = 0; i < 5; i++) { j++ }; j`, 5},
 	}
@@ -431,16 +432,27 @@ func TestContinueStatement(t *testing.T) {
 func TestReassignStatements(t *testing.T) {
 	tests := []struct {
 		input    string
-		expected int64
+		expected any
 	}{
 		{"let a = 5; a = 10; a;", 10},
 		{"let a = 5 * 5; a = 5 * 11; a;", 55},
 		{"let a = 5; let b = a; a = a * b; a;", 25},
 		{"let a = 5; let b = a; let c = a + b + 5; c = c + 100; c;", 115},
+		{"let a = 5; a += 2", 7},
+		{"let a = 5; a -= 2", 3},
+		{"let a = 5; a *= 2", 10},
+		{"let a = 6; a /= 2", 3.0},
 	}
 
 	for i, tt := range tests {
-		testIntegerObject(t, i, testEval(tt.input), tt.expected)
+		switch v := tt.expected.(type) {
+		case float64:
+			testFloatObject(t, i, testEval(tt.input), v)
+		case int:
+			testIntegerObject(t, i, testEval(tt.input), int64(v))
+		default:
+			t.Errorf("Unexpected type for test case %d: %T", i, v)
+		}
 	}
 }
 
@@ -824,16 +836,15 @@ func testIntegerObject(t *testing.T, i int, obj object.Object, expected int64) b
 	return true
 }
 
-func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
+func testFloatObject(t *testing.T, i int, obj object.Object, expected float64) bool {
 	result, ok := obj.(*object.Float)
 	if !ok {
-		t.Errorf("object is not Float. got=%T (%+v)", obj, obj)
+		t.Errorf("[test: %d] object is not Float. got=%T (%+v)", i, obj, obj)
 		return false
 	}
 
 	if !floats.AlmostEqual(result.Value, expected, 0.00001) {
-		t.Errorf("object has wrong value. got=%f, want=%f",
-			result.Value, expected)
+		t.Errorf("[test: %d] object has wrong value. got=%f, want=%f", i, result.Value, expected)
 		return false
 	}
 

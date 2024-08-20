@@ -32,15 +32,21 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
 	case '+':
-		if l.peekChar() == '+' {
+		switch l.peekChar() {
+		case '+':
 			tok = l.newTwoCharToken(token.INCR)
-		} else {
+		case '=':
+			tok = l.newTwoCharToken(token.ADD_ASSIGN)
+		default:
 			tok = newToken(token.PLUS, l.ch)
 		}
 	case '-':
-		if l.peekChar() == '-' {
+		switch l.peekChar() {
+		case '-':
 			tok = l.newTwoCharToken(token.DECR)
-		} else {
+		case '=':
+			tok = l.newTwoCharToken(token.SUB_ASSIGN)
+		default:
 			tok = newToken(token.MINUS, l.ch)
 		}
 	case '!':
@@ -50,20 +56,26 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.BANG, l.ch)
 		}
 	case '*':
-		if l.peekChar() == '/' {
+		switch l.peekChar() {
+		case '/':
 			tok = l.newTwoCharToken(token.COMMENT_END)
-		} else {
+		case '=':
+			tok = l.newTwoCharToken(token.MUL_ASSIGN)
+		default:
 			tok = newToken(token.ASTERISK, l.ch)
 		}
 	case '/':
-		if l.peekChar() == '/' {
+		switch l.peekChar() {
+		case '/':
 			tok = l.newTwoCharToken(token.COMMENT)
 			l.skipComment()
-		} else if l.peekChar() == '*' {
+		case '*':
 			tok = l.newTwoCharToken(token.COMMENT_START)
 			l.skipMultiComment()
 			return tok
-		} else {
+		case '=':
+			tok = l.newTwoCharToken(token.DIV_ASSIGN)
+		default:
 			tok = newToken(token.SLASH, l.ch)
 		}
 	case '%':

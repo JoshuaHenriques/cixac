@@ -462,7 +462,7 @@ func (hl *HashLiteral) String() string {
 }
 
 type ReassignStatement struct {
-	Token token.Token // the '=' token
+	Token token.Token // the [=, +=, -=, *=, /=] token
 	Name  *Identifier
 	Value Expression
 }
