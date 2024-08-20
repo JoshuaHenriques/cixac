@@ -243,14 +243,14 @@ print(obj[50])
 | --------- | ----------- |
 | ```[]``` | Subscript |
 | ```-``` | Unary minus |
-| ++ -- | Increment & Decrement |
-| += -= *= /= | Compound Assignment |
+| ```++ --``` | Increment & Decrement |
+| ```+= -= *= /=``` | Compound Assignment |
 | ```* / %``` | Multiplication, Division, Modulo |
 | ```+ -``` | Addition, Subtraction |
 | ```< > <= >=``` | Comparison |
 | ```== !=``` | Equality |
-| || | Logical or |
-| && | Logical and |
+| ```||``` | Logical or |
+| ```&&``` | Logical and |
 | ```!``` | Logical not |
 
 ### Builtin functions
