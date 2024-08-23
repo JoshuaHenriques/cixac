@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 
 	"github.com/joshuahenriques/cixac/evaluator"
 	"github.com/joshuahenriques/cixac/lexer"
@@ -26,6 +27,11 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
+
+		if line == "quit()" {
+			os.Exit(0)
+		}
+
 		l := lexer.New(line)
 		p := parser.New(l)
 
