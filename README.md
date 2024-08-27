@@ -27,6 +27,22 @@ Type commands
 
 # Documentation
 
+## Table of Contents
++ [Supported Types](#supported-types)
++ [Variable Bindings](#variable-bindings)
++ [Arithmetic Expressions](#arithmetic-expressions)
++ [Single and Multi-Line Comments](#single-and-multi-line-comments)
++ [Conditional Expressions](#conditional-expressions)
++ [For Loop](#for-loop)
++ [While Loop](#while-loop)
++ [Functions and Closures](#functions-and-closures)
++ [Recursion](#recursion)
++ [Strings](#strings)
++ [Arrays](#arrays)
++ [Objects](#objects)
++ [Binary and Unary Operators](#binary-and-unary-operators)
++ [Builtin Functions](#builtin-functions)
+
 ## Summary
 
 Cixac is an object-oriented dynamic programming language where the syntax is similar to Go and Python. 
@@ -55,7 +71,7 @@ Cixac is an object-oriented dynamic programming language where the syntax is sim
 | array | ``[] [1, 10] ["food", 49, true, {"foo": "bar"}]`` |
 | objects/hashmap | ``{"arr": [1, 2], 5: "five"} `` |
 
-### Variable bindings
+### Variable Bindings
 
 ```
 let int = 105329                         // integer
@@ -220,7 +236,7 @@ print(arr[3](2))
 # 4
 ```
 
-### Objects/Hashes
+### Objects
 
 ```
 let obj = {"name": "Alex", "age": 42, "title": "CEO", true: "boolean key", 50: "integer key"}
@@ -253,7 +269,7 @@ print(obj[50])
 | ```&&``` | Logical and |
 | ```!``` | Logical not |
 
-### Builtin functions
+### Builtin Functions
 
 | Function | Signature | Description | 
 |----------|-----------|-------------| 
