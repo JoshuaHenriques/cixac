@@ -99,27 +99,59 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		switch node.TokenLiteral() {
 		case "+=":
 			if obj.Object.Type() == object.INTEGER_OBJ {
-				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value + val.(*object.Integer).Value
+				if val.Type() == object.FLOAT_OBJ {
+					val.(*object.Float).Value = float64(obj.Object.(*object.Integer).Value) + val.(*object.Float).Value
+				} else {
+					val.(*object.Integer).Value = obj.Object.(*object.Integer).Value + val.(*object.Integer).Value
+				}
 			} else if obj.Object.Type() == object.FLOAT_OBJ {
-				val.(*object.Float).Value = obj.Object.(*object.Float).Value + val.(*object.Float).Value
+				if val.Type() == object.INTEGER_OBJ {
+					val = &object.Float{Value: obj.Object.(*object.Float).Value + float64(val.(*object.Integer).Value)}
+				} else {
+					val.(*object.Float).Value = obj.Object.(*object.Float).Value + val.(*object.Float).Value
+				}
 			}
 		case "-=":
 			if obj.Object.Type() == object.INTEGER_OBJ {
-				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value - val.(*object.Integer).Value
+				if val.Type() == object.FLOAT_OBJ {
+					val.(*object.Float).Value = float64(obj.Object.(*object.Integer).Value) - val.(*object.Float).Value
+				} else {
+					val.(*object.Integer).Value = obj.Object.(*object.Integer).Value - val.(*object.Integer).Value
+				}
 			} else if obj.Object.Type() == object.FLOAT_OBJ {
-				val.(*object.Float).Value = obj.Object.(*object.Float).Value - val.(*object.Float).Value
+				if val.Type() == object.INTEGER_OBJ {
+					val = &object.Float{Value: obj.Object.(*object.Float).Value - float64(val.(*object.Integer).Value)}
+				} else {
+					val.(*object.Float).Value = obj.Object.(*object.Float).Value - val.(*object.Float).Value
+				}
 			}
 		case "*=":
 			if obj.Object.Type() == object.INTEGER_OBJ {
-				val.(*object.Integer).Value = obj.Object.(*object.Integer).Value * val.(*object.Integer).Value
+				if val.Type() == object.FLOAT_OBJ {
+					val.(*object.Float).Value = float64(obj.Object.(*object.Integer).Value) * val.(*object.Float).Value
+				} else {
+					val.(*object.Integer).Value = obj.Object.(*object.Integer).Value * val.(*object.Integer).Value
+				}
 			} else if obj.Object.Type() == object.FLOAT_OBJ {
-				val.(*object.Float).Value = obj.Object.(*object.Float).Value * val.(*object.Float).Value
+				if val.Type() == object.INTEGER_OBJ {
+					val = &object.Float{Value: obj.Object.(*object.Float).Value * float64(val.(*object.Integer).Value)}
+				} else {
+					val.(*object.Float).Value = obj.Object.(*object.Float).Value * val.(*object.Float).Value
+				}
 			}
 		case "/=":
 			if obj.Object.Type() == object.INTEGER_OBJ {
-				val = &object.Float{Value: float64(obj.Object.(*object.Integer).Value / val.(*object.Integer).Value)}
+				if val.Type() == object.FLOAT_OBJ {
+					val.(*object.Float).Value = float64(obj.Object.(*object.Integer).Value) / val.(*object.Float).Value
+				} else {
+					val = &object.Float{Value: float64(obj.Object.(*object.Integer).Value / val.(*object.Integer).Value)}
+				}
 			} else if obj.Object.Type() == object.FLOAT_OBJ {
-				val.(*object.Float).Value = obj.Object.(*object.Float).Value / val.(*object.Float).Value
+				if val.Type() == object.INTEGER_OBJ {
+					val = &object.Float{Value: obj.Object.(*object.Float).Value / float64(val.(*object.Integer).Value)}
+				} else {
+					val.(*object.Float).Value = obj.Object.(*object.Float).Value / val.(*object.Float).Value
+				}
 			}
 		}
 

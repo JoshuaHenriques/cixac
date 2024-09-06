@@ -442,6 +442,10 @@ func TestReassignStatements(t *testing.T) {
 		{"let a = 5; a -= 2", 3},
 		{"let a = 5; a *= 2", 10},
 		{"let a = 6; a /= 2", 3.0},
+		{"let a = 5; a += 2.2", 7.2},
+		{"let a = 5; a -= 2.2", 2.8},
+		{"let a = 5; a *= 2.2", 11.0},
+		{"let a = 11; a /= 2.2", 5.0},
 	}
 
 	for i, tt := range tests {
