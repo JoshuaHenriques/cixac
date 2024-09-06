@@ -48,7 +48,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return newError("Identifier %s has same name as builtin", node.Name.Value)
 		}
 
-		if env.ExistsInScope(node.Name.Value) {
+		if env.ExistsInScope(node.Name.Value) && !env.ExistsInScope(ENV_FOR_FLAG) {
 			return newError("Identifier %s has already been declared", node.Name.Value)
 		}
 
