@@ -3,6 +3,7 @@ package evaluator
 import (
 	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/beorn7/floats"
 	"github.com/joshuahenriques/cixac/ast"
@@ -386,7 +387,13 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		(left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ) ||
 		(left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ):
 		return evalFloatInfixExpression(operator, left, right)
-	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ):
+		return evalStringInfixExpression(operator, left, right)
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.FLOAT_OBJ) ||
+		(left.Type() == object.FLOAT_OBJ && right.Type() == object.STRING_OBJ):
+		return evalStringInfixExpression(operator, left, right)
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.INTEGER_OBJ) ||
+		(left.Type() == object.INTEGER_OBJ && right.Type() == object.STRING_OBJ):
 		return evalStringInfixExpression(operator, left, right)
 
 	// Using pointer comparison on object.Object becuase we're using
@@ -641,7 +648,27 @@ func unwrapReturnValue(obj object.Object) object.Object {
 	return obj
 }
 
+func convertToString(obj object.Object) object.Object {
+	switch obj.Type() {
+	case object.INTEGER_OBJ:
+		intNum := obj.(*object.Integer)
+		string := &object.String{Value: strconv.Itoa(int(intNum.Value))}
+		return string
+	case object.FLOAT_OBJ:
+		floatNum := obj.(*object.Float)
+		string := &object.String{Value: strconv.FormatFloat(floatNum.Value, 'f', -1, 64)}
+		return string
+	case object.STRING_OBJ:
+		return obj
+	default:
+		return nil
+	}
+}
+
 func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	left = convertToString(left)
+	right = convertToString(right)
+
 	switch operator {
 	case "+":
 		leftVal := left.(*object.String).Value
