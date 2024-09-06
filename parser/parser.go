@@ -145,6 +145,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) parseStatement() ast.Statement {
+	fmt.Printf("token: %s\n", p.curToken.Literal)
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement(false)
@@ -171,6 +172,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseContinueStatement()
 	case token.WHILE:
 		return p.parseWhileStatement()
+	case token.COMMENT, token.COMMENT_START, token.COMMENT_END:
+		return nil
 	default:
 		return p.parseExpressionStatement()
 	}

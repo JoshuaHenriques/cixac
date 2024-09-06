@@ -244,7 +244,7 @@ func (l *Lexer) skipComment() {
 func (l *Lexer) skipMultiComment() {
 	l.readChar()
 	l.readChar()
-	for l.ch != '*' && l.peekChar() != '/' {
+	for l.ch != '*' || l.peekChar() != '/' {
 		l.readChar()
 	}
 }
