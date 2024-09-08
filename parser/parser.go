@@ -145,7 +145,6 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) parseStatement() ast.Statement {
-	fmt.Printf("token: %s\n", p.curToken.Literal)
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement(false)
