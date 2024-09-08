@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"runtime"
+	"syscall/js"
 
 	"github.com/joshuahenriques/cixac/evaluator"
 	"github.com/joshuahenriques/cixac/lexer"
@@ -27,6 +28,7 @@ var (
 
 func main() {
 	eFlag := flag.String("e", "", "Execute inline code: Specifies a string of code to be directly executed by the program")
+	wFlag := flag.Bool("w", false, "WASM environment.")
 	flag.Parse()
 
 	if len(os.Args) == 1 {
@@ -35,16 +37,26 @@ func main() {
 		repl.Start(os.Stdin, os.Stdout)
 	}
 
-	if isFlagPassed("e") {
+	switch {
+	case isFlagPassed("e"):
 		runProgram(*eFlag)
-	} else {
+	case *wFlag:
+		js.Global().Set("runScript", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			if len(args) == 0 {
+				return "Invalid number of arguments passed"
+			}
+
+			return runProgram(args[0].String())
+		}))
+		select {}
+	default:
 		file, err := os.ReadFile(os.Args[1])
 		check(err)
 		runProgram(string(file))
 	}
 }
 
-func runProgram(code string) {
+func runProgram(code string) string {
 	l := lexer.New(code)
 	p := parser.New(l)
 
@@ -57,7 +69,9 @@ func runProgram(code string) {
 	if evaluated != nil {
 		io.WriteString(os.Stdout, evaluated.Inspect())
 		io.WriteString(os.Stdout, "\n")
+		return evaluated.Inspect() + "\n\n\n"
 	}
+	return ""
 }
 
 func isFlagPassed(name string) bool {
