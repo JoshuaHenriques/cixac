@@ -236,7 +236,7 @@ func (l *Lexer) skipWhitespace() {
 }
 
 func (l *Lexer) skipComment() {
-	for l.ch != '\n' && l.ch != '\r' {
+	for l.ch != '\n' && l.ch != '\r' && l.peekChar() != 0 {
 		l.readChar()
 	}
 }
