@@ -125,21 +125,12 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = l.readString()
 	case ':':
 		tok = newToken(token.COLON, l.ch)
-	case '.':
-		if isDigit(l.peekChar()) {
-			tok = l.readNumber()
-		}
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		if isLetter(l.ch) {
-			tok.Literal = l.readIdentifier()
-			tok.Type = token.LookupIdent(tok.Literal)
-			return tok
-		} else if isDigit(l.ch) {
-			tok = l.readNumber()
-			return tok
+		if isAlphaNum(l.ch) {
+			return l.readIdentOrNumber()
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
@@ -178,34 +169,53 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
-func (l *Lexer) readIdentifier() string {
+func (l *Lexer) readIdentOrNumber() token.Token {
 	position := l.position
-	for isLetter(l.ch) {
+
+	for isAlphaNum(l.ch) {
 		l.readChar()
 	}
-	return l.input[position:l.position]
+
+	input := l.input[position:l.position]
+
+	if isNumber(input) {
+		return l.readNumber(input)
+	} else {
+		return token.Token{Literal: input, Type: token.LookupIdent(input)}
+	}
 }
 
-func (l *Lexer) readNumber() token.Token {
+func isNumber(input string) bool {
+	for i := range input {
+		if !isDigit(input[i]) && input[i] != '.' {
+			return false
+		}
+	}
+	return true
+}
+
+func (l *Lexer) readNumber(num string) token.Token {
 	var literal strings.Builder
 	var isFloat bool
 
-	if l.ch == '.' {
+	if num[0] == '.' {
 		literal.WriteString("0.")
-		l.readChar()
 		isFloat = true
+		num = num[1:]
 	}
 
-	for isDigit(l.ch) {
-		literal.WriteByte(l.ch)
-		l.readChar()
-		if l.ch == '.' && !isFloat {
-			literal.WriteByte(l.ch)
-			l.readChar()
+	for i := range num {
+		if num[i] == '.' && !isFloat {
+			literal.WriteByte(num[i])
 			isFloat = true
-			if !isDigit(l.ch) {
+			if i >= len(num)-1 {
 				literal.WriteString("0")
+				break
 			}
+		} else if num[i] == '.' && isFloat {
+			break
+		} else {
+			literal.WriteByte(num[i])
 		}
 	}
 
@@ -247,6 +257,10 @@ func (l *Lexer) skipMultiComment() {
 	for l.ch != '*' || l.peekChar() != '/' {
 		l.readChar()
 	}
+}
+
+func isAlphaNum(ch byte) bool {
+	return isDigit(ch) || isLetter(ch) || ch == '.'
 }
 
 func isDigit(ch byte) bool {
