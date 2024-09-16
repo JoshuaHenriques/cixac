@@ -431,6 +431,15 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	case (left.Type() == object.STRING_OBJ && right.Type() == object.INTEGER_OBJ) ||
 		(left.Type() == object.INTEGER_OBJ && right.Type() == object.STRING_OBJ):
 		return evalStringInfixExpression(operator, left, right)
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.BOOLEAN_OBJ) ||
+		(left.Type() == object.BOOLEAN_OBJ && right.Type() == object.STRING_OBJ):
+		return evalStringInfixExpression(operator, left, right)
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.ARRAY_OBJ) ||
+		(left.Type() == object.ARRAY_OBJ && right.Type() == object.STRING_OBJ):
+		return evalStringInfixExpression(operator, left, right)
+	case (left.Type() == object.STRING_OBJ && right.Type() == object.HASH_OBJ) ||
+		(left.Type() == object.HASH_OBJ && right.Type() == object.STRING_OBJ):
+		return evalStringInfixExpression(operator, left, right)
 
 	// Using pointer comparison on object.Object becuase we're using
 	// the same TRUE and FALSE pointers that we created above
@@ -738,11 +747,23 @@ func convertToString(obj object.Object) object.Object {
 	switch obj.Type() {
 	case object.INTEGER_OBJ:
 		intNum := obj.(*object.Integer)
-		string := &object.String{Value: strconv.Itoa(int(intNum.Value))}
+		string := &object.String{Value: intNum.Inspect()}
 		return string
 	case object.FLOAT_OBJ:
 		floatNum := obj.(*object.Float)
 		string := &object.String{Value: strconv.FormatFloat(floatNum.Value, 'f', -1, 64)}
+		return string
+	case object.BOOLEAN_OBJ:
+		boolean := obj.(*object.Boolean)
+		string := &object.String{Value: boolean.Inspect()}
+		return string
+	case object.ARRAY_OBJ:
+		array := obj.(*object.Array)
+		string := &object.String{Value: array.Inspect()}
+		return string
+	case object.HASH_OBJ:
+		hash := obj.(*object.Hash)
+		string := &object.String{Value: hash.Inspect()}
 		return string
 	case object.STRING_OBJ:
 		return obj
