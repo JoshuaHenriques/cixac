@@ -13,6 +13,7 @@ import (
 // Avoid creating object.Boolean & object.Null every time
 var (
 	NULL           = &object.Null{}
+	EMPTY          = &object.Empty{}
 	TRUE           = &object.Boolean{Value: true}
 	FALSE          = &object.Boolean{Value: false}
 	BREAK          = &object.Break{}

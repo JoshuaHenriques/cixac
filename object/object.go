@@ -16,6 +16,7 @@ const (
 	FLOAT_OBJ        = "FLOAT"
 	BOOLEAN_OBJ      = "BOOLEAN"
 	NULL_OBJ         = "NULL"
+	EMPTY_OBJ        = "EMPTY_OBJ"
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
 	FUNCTION_OBJ     = "FUNCTION"
@@ -78,6 +79,11 @@ func (b *Boolean) HashKey() HashKey {
 
 	return HashKey{Type: b.Type(), Value: value}
 }
+
+type Empty struct{}
+
+func (n *Empty) Type() ObjectType { return EMPTY_OBJ }
+func (n *Empty) Inspect() string  { return "" }
 
 type Null struct{}
 
