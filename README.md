@@ -34,6 +34,7 @@ Type "quit()" to exit the REPL
 + [Single and Multi-Line Comments](#single-and-multi-line-comments)
 + [Conditional Expressions](#conditional-expressions)
 + [For Loop](#for-loop)
++ [For In Loop](#for-in-loop)
 + [While Loop](#while-loop)
 + [Functions and Closures](#functions-and-closures)
 + [Recursion](#recursion)
