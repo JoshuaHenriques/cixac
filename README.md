@@ -154,7 +154,7 @@ for (let i = 0; i < 10; i++) {
 ### For In Loop
 
 ```
-for (i, ele in \[1, 2, 3\]) {
+for (i, ele in [1, 2, 3]) {
   print("i:ele = " + i + ":" + ele)
 }
 // i:ele = 0:1
