@@ -66,6 +66,8 @@ func TestNextToken(t *testing.T) {
     -=
     *=
     /=
+
+  for (key, val in iterable) { }
 `
 
 	tests := []struct {
@@ -246,6 +248,16 @@ func TestNextToken(t *testing.T) {
 		{token.SUB_ASSIGN, "-="},
 		{token.MUL_ASSIGN, "*="},
 		{token.DIV_ASSIGN, "/="},
+		{token.FOR, "for"},
+		{token.LPAREN, "("},
+		{token.IDENT, "key"},
+		{token.COMMA, ","},
+		{token.IDENT, "val"},
+		{token.IN, "in"},
+		{token.IDENT, "iterable"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}
 

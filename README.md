@@ -148,6 +148,33 @@ for (let i = 0; i < 10; i++) {
 // 1
 // 3
 // 5
+
+### For In Loop
+
+```
+for (i, ele in \[1, 2, 3\]) {
+  print("i:ele = " + i + ":" + ele)
+}
+// i:ele = 0:1
+// i:ele = 1:2
+// i:ele = 2:3
+
+for (key, val in {0: 1, 1: 2, 2: 3}) {
+  print("key:val = " + key + ":" + val)
+}
+// key:val = 0:1
+// key:val = 1:2
+// key:val = 2:3
+
+for (i, ch in "string") {
+  print("i:ch = " + i + ":" + ch)
+}
+// i:ch = 0:s
+// i:ch = 1:t
+// i:ch = 2:r
+// i:ch = 3:i
+// i:ch = 4:n
+// i:ch = 5:g
 ```
 
 ### While Loop

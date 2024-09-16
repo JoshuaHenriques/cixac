@@ -164,7 +164,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		}
 		return p.parseExpressionStatement()
 	case token.FOR:
-		return p.parseForLoopStatement()
+		return p.parseForStatement()
+		// return p.parseForLoopStatement()
 	case token.BREAK:
 		return p.parseBreakStatement()
 	case token.CONTINUE:
@@ -417,12 +418,70 @@ func (p *Parser) parseIfExpression() ast.Expression {
 	return expression
 }
 
-func (p *Parser) parseForLoopStatement() *ast.ForLoopStatement {
-	forLoop := &ast.ForLoopStatement{Token: p.curToken}
+func (p *Parser) parseForStatement() ast.Statement {
+	tok := p.curToken
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
+
+	switch {
+	case p.peekTokenIs(token.LET):
+		return p.parseForLoopStatement(tok)
+	case p.peekTokenIs(token.IDENT):
+		return p.parseForInLoopStatement(tok)
+	default:
+		msg := fmt.Sprintf("could not parse %q for a for loop", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+}
+
+func (p *Parser) parseForInLoopStatement(tok token.Token) *ast.ForInLoopStatement {
+	forInLoop := &ast.ForInLoopStatement{Token: tok}
+
+	if !p.expectPeek(token.IDENT) {
+		return nil
+	}
+
+	forInLoop.KeyIndex = p.parseIdentifier().(*ast.Identifier)
+
+	if !p.expectPeek(token.COMMA) {
+		return nil
+	}
+	p.nextToken()
+
+	forInLoop.ValueElement = p.parseIdentifier().(*ast.Identifier)
+
+	if !p.expectPeek(token.IN) {
+		return nil
+	}
+	p.nextToken()
+
+	iterable, ok := p.parseExpression(LOWEST).(ast.Iterable)
+	if !ok {
+		msg := fmt.Sprintf("could not parse %q as iterable", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	forInLoop.Iterable = iterable
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	forInLoop.Body = p.parseBlockStatement()
+
+	return forInLoop
+}
+
+func (p *Parser) parseForLoopStatement(tok token.Token) *ast.ForLoopStatement {
+	forLoop := &ast.ForLoopStatement{Token: tok}
 
 	if !p.expectPeek(token.LET) {
 		return nil

@@ -157,14 +157,17 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		if env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(node.Name.Value) && env.ExistsOutsideScope(node.Name.Value) {
 			env.SetOutsideScope(node.Name.Value, object.ObjectMeta{Object: val})
-			return nil
+		} else {
+			env.Set(node.Name.Value, object.ObjectMeta{Object: val})
 		}
-		env.Set(node.Name.Value, object.ObjectMeta{Object: val})
 
 		return val
 
 	case *ast.ForLoopStatement:
 		return evalForLoopStatement(node, env)
+
+	case *ast.ForInLoopStatement:
+		return evalForInLoopStatement(node, env)
 
 	case *ast.WhileStatement:
 		return evalWhileStatement(node, env)
@@ -251,9 +254,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 		if env.ExistsInScope(ENV_FOR_FLAG) && !env.ExistsInScope(ident.Value) && env.ExistsOutsideScope(ident.Value) {
 			env.SetOutsideScope(ident.Value, object.ObjectMeta{Object: val})
-			return retVal
+		} else {
+			env.Set(ident.Value, object.ObjectMeta{Object: val})
 		}
-		env.Set(ident.Value, object.ObjectMeta{Object: val})
 
 		return retVal
 
@@ -538,6 +541,56 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 	default:
 		return newError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+func evalForInLoopStatement(fl *ast.ForInLoopStatement, env *object.Environment) object.Object {
+	var result object.Object
+
+	forEnv := object.NewEnclosedEnvironment(env)
+	forEnv.Set(ENV_FOR_FLAG, object.ObjectMeta{Object: TRUE})
+
+	switch fl.Iterable.(type) {
+	case *ast.ArrayLiteral:
+		array := Eval(fl.Iterable.(*ast.ArrayLiteral), env).(*object.Array)
+
+		for i, ele := range array.Elements {
+			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: &object.Integer{Value: int64(i)}})
+			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: ele})
+
+			result = Eval(fl.Body, forEnv)
+
+			if result.Type() == object.BREAK_OBJ {
+				break
+			}
+		}
+	case *ast.HashLiteral:
+		hashmap := Eval(fl.Iterable.(*ast.HashLiteral), env).(*object.Hash)
+		for _, hashPair := range hashmap.Pairs {
+			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: hashPair.Key})
+			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: hashPair.Value})
+
+			result = Eval(fl.Body, forEnv)
+
+			if result.Type() == object.BREAK_OBJ {
+				break
+			}
+		}
+	case *ast.StringLiteral:
+		str := Eval(fl.Iterable.(*ast.StringLiteral), env).(*object.String)
+		for i, ch := range str.Value {
+			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: &object.Integer{Value: int64(i)}})
+			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: &object.String{Value: string(ch)}})
+
+			result = Eval(fl.Body, forEnv)
+
+			if result.Type() == object.BREAK_OBJ {
+				break
+			}
+		}
+	}
+
+	forEnv.Delete(ENV_FOR_FLAG)
+	return result
 }
 
 func evalForLoopStatement(fl *ast.ForLoopStatement, env *object.Environment) object.Object {

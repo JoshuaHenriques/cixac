@@ -1191,6 +1191,55 @@ func TestWhileLoopStatement(t *testing.T) {
 	}
 }
 
+func TestForInLoopStatement(t *testing.T) {
+	tests := []struct {
+		input string
+	}{
+		{`for (key, val in "string") { val }`},
+		{`for (key, val in {"key": "value"}) { val }`},
+		{`for (key, val in [1, 2, 3]) { val }`},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d", len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ForInLoopStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.ForInLoopStatement. got=%T", stmt)
+		}
+
+		if !testIdentifier(t, stmt.KeyIndex, "key") {
+			return
+		}
+
+		if !testIdentifier(t, stmt.ValueElement, "val") {
+			return
+		}
+
+		// todo: test iterable
+
+		if len(stmt.Body.Statements) != 1 {
+			t.Errorf("stmt.Body.Statements is not 1 statements. got=%d\n", len(stmt.Body.Statements))
+		}
+
+		bodyStmt, ok := stmt.Body.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("stmt.Body.Statements[0] is not ast.ExpressionStatement. got=%T", stmt.Body.Statements[0])
+		}
+
+		if !testIdentifier(t, bodyStmt.Expression, "val") {
+			return
+		}
+	}
+}
+
 func TestForLoopStatement(t *testing.T) {
 	tests := []struct {
 		input string

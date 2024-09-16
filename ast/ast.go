@@ -22,6 +22,10 @@ type Expression interface {
 	expressionNode()
 }
 
+type Iterable interface {
+	iterable()
+}
+
 type Program struct {
 	Statements []Statement
 }
@@ -269,6 +273,23 @@ func (w *WhileStatement) String() string {
 	return out.String()
 }
 
+type ForInLoopStatement struct {
+	Token        token.Token // the for token
+	KeyIndex     *Identifier
+	ValueElement *Identifier
+	Iterable     Iterable // hashmap/array/string
+	Body         *BlockStatement
+}
+
+func (fi *ForInLoopStatement) statementNode()       {}
+func (fi *ForInLoopStatement) TokenLiteral() string { return fi.Token.Literal }
+func (fi *ForInLoopStatement) String() string {
+	var out bytes.Buffer
+	// todo
+
+	return out.String()
+}
+
 type ForLoopStatement struct {
 	Token          token.Token // the for token
 	Initialization *LetStatement
@@ -394,6 +415,7 @@ type StringLiteral struct {
 }
 
 func (sl *StringLiteral) expressionNode()      {}
+func (sl *StringLiteral) iterable()            {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
@@ -403,6 +425,7 @@ type ArrayLiteral struct {
 }
 
 func (al *ArrayLiteral) expressionNode()      {}
+func (al *ArrayLiteral) iterable()            {}
 func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
 func (al *ArrayLiteral) String() string {
 	var out bytes.Buffer
@@ -445,6 +468,7 @@ type HashLiteral struct {
 }
 
 func (hl *HashLiteral) expressionNode()      {}
+func (hl *HashLiteral) iterable()            {}
 func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
 func (hl *HashLiteral) String() string {
 	var out bytes.Buffer
