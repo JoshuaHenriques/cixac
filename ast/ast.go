@@ -23,6 +23,7 @@ type Expression interface {
 }
 
 type Iterable interface {
+	Node
 	iterable()
 }
 
@@ -285,7 +286,19 @@ func (fi *ForInLoopStatement) statementNode()       {}
 func (fi *ForInLoopStatement) TokenLiteral() string { return fi.Token.Literal }
 func (fi *ForInLoopStatement) String() string {
 	var out bytes.Buffer
-	// todo
+
+	out.WriteString(fi.TokenLiteral())
+	out.WriteString(" (")
+	out.WriteString(fi.KeyIndex.String() + ", ")
+	out.WriteString(fi.ValueElement.String() + " in ")
+	out.WriteString(fi.Iterable.String())
+	out.WriteString(") ")
+
+	out.WriteString("{\n")
+	for _, s := range fi.Body.Statements {
+		out.WriteString(s.String())
+	}
+	out.WriteString("\n}")
 
 	return out.String()
 }
