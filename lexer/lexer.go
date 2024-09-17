@@ -125,6 +125,12 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = l.readString()
 	case ':':
 		tok = newToken(token.COLON, l.ch)
+	case '.':
+		if !isDigit(l.peekChar()) {
+			tok = newToken(token.PERIOD, l.ch)
+		} else {
+			return l.readIdentOrNumber()
+		}
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -173,6 +179,10 @@ func (l *Lexer) readIdentOrNumber() token.Token {
 	position := l.position
 
 	for isAlphaNum(l.ch) {
+		if isLetter(l.ch) && l.peekChar() == '.' {
+			l.readChar()
+			return token.Token{Literal: l.input[position:l.position], Type: token.LookupIdent(l.input[position:l.position])}
+		}
 		l.readChar()
 	}
 

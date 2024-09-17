@@ -406,7 +406,7 @@ func TestForInLoopStatements(t *testing.T) {
 	}{
 		{`let j = 0; for (i, ele in [1, 2, 3]) { j += i + ele }; j`, 9},
 		{`let j = 0; for (key, val in {0: 1, 1: 2, 2: 3}) { j += key + val}; j`, 9},
-		{`let j = 0; for (i, ch in "string") { j += i; print(ch) }; j`, 15},
+		{`let j = 0; for (i, ch in "string") { j += i; }; j`, 15},
 	}
 
 	for i, tt := range tests {
@@ -791,6 +791,27 @@ func TestHashIndexExpressions(t *testing.T) {
 			`{false: 5}[false]`, 5,
 		},
 	}
+	for i, tt := range tests {
+		evaluated := testEval(tt.input)
+		integer, ok := tt.expected.(int)
+		if ok {
+			testIntegerObject(t, i, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
+func TestArrayMethodExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{
+			"let myArray = [1, 2, 3]; myArray.push(1 + 1); len(myArray)", 4,
+		},
+	}
+
 	for i, tt := range tests {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)

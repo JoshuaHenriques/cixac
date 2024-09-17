@@ -12,14 +12,15 @@ import (
 
 // Avoid creating object.Boolean & object.Null every time
 var (
-	NULL           = &object.Null{}
-	EMPTY          = &object.Empty{}
-	TRUE           = &object.Boolean{Value: true}
-	FALSE          = &object.Boolean{Value: false}
-	BREAK          = &object.Break{}
-	CONTINUE       = &object.Continue{}
-	ENV_FOR_FLAG   = "ENV_FOR_FLAG"
-	ENV_WHILE_FLAG = "ENV_WHILE_FLAG"
+	NULL                   = &object.Null{}
+	EMPTY                  = &object.Empty{}
+	TRUE                   = &object.Boolean{Value: true}
+	FALSE                  = &object.Boolean{Value: false}
+	BREAK                  = &object.Break{}
+	CONTINUE               = &object.Continue{}
+	ENV_FOR_FLAG           = "ENV_FOR_FLAG"
+	ENV_WHILE_FLAG         = "ENV_WHILE_FLAG"
+	ENV_OBJECT_METHOD_FLAG = "ENV_OBJECT_METHOD_FLAG"
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -277,6 +278,27 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return args[0]
 		}
 		return applyFunction(function, args)
+
+	case *ast.MethodExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+
+		methEnv := object.NewEnclosedEnvironment(env)
+		methEnv.Set(ENV_OBJECT_METHOD_FLAG, object.ObjectMeta{Object: left})
+
+		method := Eval(node.Method.Function, methEnv)
+		if isError(method) {
+			return method
+		}
+
+		args := evalExpressions(node.Method.Arguments, env)
+		if len(args) == 1 && isError(args[0]) {
+			return args[0]
+		}
+		args = append([]object.Object{left}, args...)
+		return applyFunction(method, args)
 
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
@@ -686,6 +708,20 @@ func isError(obj object.Object) bool {
 func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
 	if val, ok := env.Get(node.Value); ok {
 		return val.Object
+	}
+
+	if env.ExistsInScope(ENV_OBJECT_METHOD_FLAG) {
+		envObj, _ := env.Get(ENV_OBJECT_METHOD_FLAG)
+		obj, ok := envObj.Object.(object.Methodable)
+		if !ok {
+			return newError("Object doesn't not implement Methodable")
+		}
+
+		if objBuiltin, ok := obj.Methods(node.Value); ok {
+			return objBuiltin
+		}
+
+		return newError("Method not found in object methods")
 	}
 
 	if builtin, ok := builtins[node.Value]; ok {

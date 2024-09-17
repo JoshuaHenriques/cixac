@@ -959,6 +959,37 @@ func TestParsingArrayLiterals(t *testing.T) {
 	testInfixExpression(t, array.Elements[2], 3, "+", 3)
 }
 
+func TestParsingMethodExpressions(t *testing.T) {
+	input := "arr.push(1 + 1)"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
+	methodExp, ok := stmt.Expression.(*ast.MethodExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.MethodExpression. got=%T", stmt.Expression)
+	}
+
+	if !testIdentifier(t, methodExp.Left, "arr") {
+		return
+	}
+
+	exp := methodExp.Method
+
+	if !testIdentifier(t, exp.Function, "push") {
+		return
+	}
+
+	if len(exp.Arguments) != 1 {
+		t.Fatalf("wrong length of arguments. got=%d", len(exp.Arguments))
+	}
+
+	testInfixExpression(t, exp.Arguments[0], 1, "+", 1)
+}
+
 func TestParsingIndexExpressions(t *testing.T) {
 	input := "myArray[1 + 1]"
 
@@ -1543,6 +1574,27 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 
 	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
 		t.Errorf("integ.TokenLiteral not %d. got=%s", value,
+			integ.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func testFloatLiteral(t *testing.T, il ast.Expression, value float64) bool {
+	integ, ok := il.(*ast.FloatLiteral)
+	if !ok {
+		t.Errorf("il not *ast.FloatLiteral. got=%T", il)
+		return false
+	}
+
+	if integ.Value != value {
+		t.Errorf("integ.Value not %f. got=%f", value, integ.Value)
+		return false
+	}
+
+	if integ.TokenLiteral() != fmt.Sprintf("%f", value) {
+		t.Errorf("integ.TokenLiteral not %f. got=%s", value,
 			integ.TokenLiteral())
 		return false
 	}

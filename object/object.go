@@ -42,6 +42,10 @@ type Hashable interface {
 	HashKey() HashKey
 }
 
+type Methodable interface {
+	Methods(string) (Object, bool)
+}
+
 type Integer struct {
 	Value int64
 }
@@ -171,6 +175,33 @@ func (ao *Array) Inspect() string {
 	return out.String()
 }
 
+func (ao *Array) Methods(name string) (Object, bool) {
+	method, ok := arrayBuiltins[name]
+	if !ok {
+		return nil, false
+	}
+
+	return &method, true
+}
+
+var arrayBuiltins = map[string]Builtin{
+	"push": {
+		Fn: func(args ...Object) Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != ARRAY_OBJ {
+				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arr := args[0].(*Array)
+			arr.Elements = append(arr.Elements, []Object{args[1]}...)
+
+			return &Empty{}
+		},
+	},
+}
+
 type HashPair struct {
 	Key   Object
 	Value Object
@@ -206,3 +237,7 @@ type Continue struct{}
 
 func (c *Continue) Type() ObjectType { return CONTINUE_OBJ }
 func (c *Continue) Inspect() string  { return "" }
+
+func newError(format string, a ...interface{}) *Error {
+	return &Error{Message: fmt.Sprintf(format, a...)}
+}

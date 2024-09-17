@@ -68,6 +68,7 @@ func TestNextToken(t *testing.T) {
     /=
 
   for (key, val in iterable) { }
+  map.add() 
 `
 
 	tests := []struct {
@@ -258,6 +259,11 @@ func TestNextToken(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.RBRACE, "}"},
+		{token.IDENT, "map"},
+		{token.PERIOD, "."},
+		{token.IDENT, "add"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
 		{token.EOF, ""},
 	}
 

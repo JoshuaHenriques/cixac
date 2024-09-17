@@ -455,6 +455,27 @@ func (al *ArrayLiteral) String() string {
 	return out.String()
 }
 
+type MethodExpression struct {
+	Token  token.Token // the . token
+	Left   Expression
+	Method *CallExpression
+}
+
+func (ie *MethodExpression) expressionNode()      {}
+func (ie *MethodExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *MethodExpression) String() string {
+	var out bytes.Buffer
+
+	// todo: test String()
+	out.WriteString("(")
+	out.WriteString(ie.Left.String())
+	out.WriteString(".")
+	out.WriteString(ie.Method.String())
+	out.WriteString(")")
+
+	return out.String()
+}
+
 type IndexExpression struct {
 	Token token.Token // the [ token
 	Left  Expression
