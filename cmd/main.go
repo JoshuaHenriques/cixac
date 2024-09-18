@@ -31,6 +31,7 @@ func main() {
 
 	if len(os.Args) == 1 {
 		fmt.Printf("Cixac Version: %s (%s) on %s\n", BuildVersion, BuildDate, runtime.GOOS)
+		fmt.Printf("Use '\\' at the end of a line for multi-line input\n")
 		fmt.Printf("Type \"quit()\" to exit the REPL\n")
 		repl.Start(os.Stdin, os.Stdout)
 	}

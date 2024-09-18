@@ -24,11 +24,10 @@ func filterInput(r rune) (rune, bool) {
 
 func Start(in io.Reader, out io.Writer) {
 	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
-		HistoryFile:     "/tmp/readline.tmp",
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
-
+		Prompt:              "\033[31m»\033[0m ",
+		HistoryFile:         "/tmp/readline.tmp",
+		InterruptPrompt:     "^C",
+		EOFPrompt:           "exit",
 		HistorySearchFold:   true,
 		FuncFilterInputRune: filterInput,
 	})
@@ -41,8 +40,22 @@ func Start(in io.Reader, out io.Writer) {
 	env := object.NewEnvironment()
 
 	log.SetOutput(l.Stderr())
+
+	var multiLineBuffer strings.Builder
+	isMultiLine := false
+
 	for {
-		line, err := l.Readline()
+		var line string
+		var err error
+
+		if isMultiLine {
+			l.SetPrompt("... ")
+		} else {
+			l.SetPrompt("\033[31m»\033[0m ")
+		}
+
+		line, err = l.Readline()
+
 		if err == readline.ErrInterrupt {
 			if len(line) == 0 {
 				break
@@ -53,13 +66,23 @@ func Start(in io.Reader, out io.Writer) {
 			break
 		}
 
-		line = strings.TrimSpace(line)
-
 		switch {
 		case line == "quit()":
 			os.Exit(0)
+		case strings.HasSuffix(line, `\`):
+			multiLineBuffer.WriteString(strings.TrimSuffix(line, `\`) + "\n")
+			isMultiLine = true
+			continue
 		}
 
+		if isMultiLine {
+			multiLineBuffer.WriteString(line + "\n")
+			line = multiLineBuffer.String()
+			multiLineBuffer.Reset()
+			isMultiLine = false
+		}
+
+		line = strings.TrimSpace(line)
 		l := lexer.New(line)
 		p := parser.New(l)
 
