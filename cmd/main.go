@@ -55,8 +55,10 @@ func runProgram(code string) {
 
 	evaluated := evaluator.Eval(program, object.NewEnvironment())
 	if evaluated != nil {
-		io.WriteString(os.Stdout, evaluated.Inspect())
-		io.WriteString(os.Stdout, "\n")
+		if evaluated.Type() != object.EMPTY_OBJ {
+			io.WriteString(os.Stdout, evaluated.Inspect())
+			io.WriteString(os.Stdout, "\n")
+		}
 	}
 }
 
