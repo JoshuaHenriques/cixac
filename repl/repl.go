@@ -1,34 +1,62 @@
 package repl
 
 import (
-	"bufio"
-	"fmt"
 	"io"
+	"log"
 	"os"
+	"strings"
 
+	"github.com/chzyer/readline"
 	"github.com/joshuahenriques/cixac/evaluator"
 	"github.com/joshuahenriques/cixac/lexer"
 	"github.com/joshuahenriques/cixac/object"
 	"github.com/joshuahenriques/cixac/parser"
 )
 
-const PROMPT = ">> "
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	// block CtrlZ feature
+	case readline.CharCtrlZ:
+		return r, false
+	}
+	return r, true
+}
 
 func Start(in io.Reader, out io.Writer) {
-	scanner := bufio.NewScanner(in)
+	l, err := readline.NewEx(&readline.Config{
+		Prompt:          "\033[31m»\033[0m ",
+		HistoryFile:     "/tmp/readline.tmp",
+		InterruptPrompt: "^C",
+		EOFPrompt:       "exit",
+
+		HistorySearchFold:   true,
+		FuncFilterInputRune: filterInput,
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer l.Close()
+	l.CaptureExitSignal()
+
 	env := object.NewEnvironment()
 
+	log.SetOutput(l.Stderr())
 	for {
-		fmt.Fprint(out, PROMPT)
-		scanned := scanner.Scan()
-
-		if !scanned {
-			return
+		line, err := l.Readline()
+		if err == readline.ErrInterrupt {
+			if len(line) == 0 {
+				break
+			} else {
+				continue
+			}
+		} else if err == io.EOF {
+			break
 		}
 
-		line := scanner.Text()
+		line = strings.TrimSpace(line)
 
-		if line == "quit()" {
+		switch {
+		case line == "quit()":
 			os.Exit(0)
 		}
 
