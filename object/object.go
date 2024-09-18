@@ -176,30 +176,12 @@ func (ao *Array) Inspect() string {
 }
 
 func (ao *Array) Methods(name string) (Object, bool) {
-	method, ok := arrayBuiltins[name]
+	method, ok := ArrayBuiltins[name]
 	if !ok {
 		return nil, false
 	}
 
 	return &method, true
-}
-
-var arrayBuiltins = map[string]Builtin{
-	"push": {
-		Fn: func(args ...Object) Object {
-			if len(args) != 2 {
-				return newError("wrong number of arguments. got=%d, want=1", len(args))
-			}
-			if args[0].Type() != ARRAY_OBJ {
-				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
-			}
-
-			arr := args[0].(*Array)
-			arr.Elements = append(arr.Elements, []Object{args[1]}...)
-
-			return &Empty{}
-		},
-	},
 }
 
 type HashPair struct {

@@ -19,7 +19,7 @@ The Cixac programming language — pronounced 'SIGH-zack' — is a passion proje
 **Start REPL**:
 
 ```
-$ make run
+$ make run or $ ./bin/cixac
 Cixac Version: 0.1-alpha (Aug 20 2024)
 Type "quit()" to exit the REPL
 >> 
@@ -43,6 +43,7 @@ Type "quit()" to exit the REPL
 + [Objects](#objects)
 + [Binary and Unary Operators](#binary-and-unary-operators)
 + [Builtin Functions](#builtin-functions)
++ [Array Builtin Functions](#array-builtin-functions)
 
 ## Summary
 
@@ -304,10 +305,15 @@ print(obj[50])
 |----------|-----------|-------------| 
 | `len` | `len(arg: STRING \| ARRAY \| HASH) -> INTEGER` | Returns length of strings, arrays, and hashmaps | 
 | `print` | `print(arg: EXPRESSION) -> NULL` | Prints the value(s) to standard output and returns NULL | 
-| `first` | `first(arg: ARRAY) -> ANY \| NULL` | Returns the first element of the array or NULL if empty | 
-| `last` | `last(arg: ARRAY) -> ANY \| NULL` | Returns the last element of the array or NULL if empty | 
-| `rest` | `rest(arg: ARRAY) -> ARRAY` | Returns new array with the first element removed | 
-| `push` | `push(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the end. Returns the mutated array. |
-| `pushleft` | `pushleft(arr: ARRAY, value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the beginning. Returns the mutated array. |
-| `pop` | `pop(arr: ARRAY) -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
-| `popleft` | `popleft(arr: ARRAY) -> ANY` | Mutates the array by removing the first element. Returns the popped value. | 
+
+### Array Builtin Functions
+
+| Function | Signature | Description | 
+|----------|-----------|-------------| 
+| `first` | `ARRAY.first() -> ANY \| NULL` | Returns the first element of the array or NULL if empty | 
+| `last` | `ARRAY.last() -> ANY \| NULL` | Returns the last element of the array or NULL if empty | 
+| `rest` | `ARRAY.rest() -> ARRAY` | Returns new array with the first element removed | 
+| `push` | `ARRAY.push(value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the end. Returns the mutated array. |
+| `pushleft` | `ARRAY.pushleft(value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the beginning. Returns the mutated array. |
+| `pop` | `ARRAY.pop() -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
+| `popleft` | `ARRAY.popleft() -> ANY` | Mutates the array by removing the first element. Returns the popped value. | 

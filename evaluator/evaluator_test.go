@@ -299,7 +299,7 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{
 			"foobar",
-			"identifier not found: foobar",
+			"Identifier not found: foobar",
 		},
 		{
 			`"Hello" - "World"`,
@@ -328,10 +328,6 @@ func TestErrorHandling(t *testing.T) {
 		{
 			`fn decl() { 5 } let decl = 6`,
 			`Identifier decl has already been declared`,
-		},
-		{
-			`let first = 7`,
-			`Identifier first has same name as builtin`,
 		},
 		{
 			`print = "foo"`,
@@ -600,27 +596,27 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len({})`, 0},
 		{`len([])`, 0},
 		{`len({"key1": 5, "key2": 10})`, 2},
-		{`first([1, 2, 3])`, 1},
-		{`first([])`, nil},
-		{`first(1)`, "argument to `first` must be ARRAY, got INTEGER"},
-		{`last([1, 2, 3])`, 3},
-		{`last([])`, nil},
-		{`last(1)`, "argument to `last` must be ARRAY, got INTEGER"},
-		{`rest([1, 2, 3])`, []int{2, 3}},
-		{`rest([])`, nil},
-		{`push([], 1)`, []int{1}},
-		{`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
-		{`pushleft([], 1)`, []int{1}},
-		{`pushleft([1, 2, 3], 4)`, []int{4, 1, 2, 3}},
-		{`pushleft(1, 1)`, "argument to `pushleft` must be ARRAY, got INTEGER"},
-		{`pop([1, 2, 3])`, 3},
-		{`let arr = [1, 2, 3]; pop(arr); arr`, []int{1, 2}},
-		{`pop([])`, "ARRAY must have elements for `pop`"},
-		{`pop(1)`, "argument to `pop` must be ARRAY, got INTEGER"},
-		{`popleft([1, 2, 3])`, 1},
-		{`let arr = [1, 2, 3]; popleft(arr); arr`, []int{2, 3}},
-		{`popleft([])`, "ARRAY must have elements for `popleft`"},
-		{`popleft(1)`, "argument to `popleft` must be ARRAY, got INTEGER"},
+		// {`first([1, 2, 3])`, 1},
+		// {`first([])`, nil},
+		// {`first(1)`, "argument to `first` must be ARRAY, got INTEGER"},
+		// {`last([1, 2, 3])`, 3},
+		// {`last([])`, nil},
+		// {`last(1)`, "argument to `last` must be ARRAY, got INTEGER"},
+		// {`rest([1, 2, 3])`, []int{2, 3}},
+		// {`rest([])`, nil},
+		// {`push([], 1)`, []int{1}},
+		// {`push(1, 1)`, "argument to `push` must be ARRAY, got INTEGER"},
+		// {`pushleft([], 1)`, []int{1}},
+		// {`pushleft([1, 2, 3], 4)`, []int{4, 1, 2, 3}},
+		// {`pushleft(1, 1)`, "argument to `pushleft` must be ARRAY, got INTEGER"},
+		// {`pop([1, 2, 3])`, 3},
+		// {`let arr = [1, 2, 3]; pop(arr); arr`, []int{1, 2}},
+		// {`pop([])`, "ARRAY must have elements for `pop`"},
+		// {`pop(1)`, "argument to `pop` must be ARRAY, got INTEGER"},
+		// {`popleft([1, 2, 3])`, 1},
+		// {`let arr = [1, 2, 3]; popleft(arr); arr`, []int{2, 3}},
+		// {`popleft([])`, "ARRAY must have elements for `popleft`"},
+		// {`popleft(1)`, "argument to `popleft` must be ARRAY, got INTEGER"},
 		// {`print("hey")`, nil},
 	}
 
@@ -807,18 +803,63 @@ func TestArrayMethodExpressions(t *testing.T) {
 		input    string
 		expected interface{}
 	}{
-		{
-			"let myArray = [1, 2, 3]; myArray.push(1 + 1); len(myArray)", 4,
-		},
+		{`[1, 2, 3].first()`, 1},
+		{`[].first()`, nil},
+		{`1.first()`, "Identifier not found: 1.first"},
+		{`[1, 2, 3].last()`, 3},
+		{`[].last()`, nil},
+		{`1.last()`, "Identifier not found: 1.last"},
+		{`[1, 2, 3].rest()`, []int{2, 3}},
+		{`[].rest()`, nil},
+		{"let myArray = [1, 2, 3]; myArray.push(1 + 1); len(myArray)", 4},
+		{`[].push(1)`, []int{1}},
+		{`1.push(1)`, "Identifier not found: 1.push"},
+		{`[].pushleft(1)`, []int{1}},
+		{`[1, 2, 3].pushleft(4)`, []int{4, 1, 2, 3}},
+		{`1.pushleft(1)`, "Identifier not found: 1.pushleft"},
+		{`[1, 2, 3].pop()`, 3},
+		{`let arr = [1, 2, 3]; arr.pop(); arr`, []int{1, 2}},
+		{`[].pop()`, "ARRAY must have elements for `pop`"},
+		{`1.pop()`, "Identifier not found: 1.pop"},
+		{`[1, 2, 3].popleft()`, 1},
+		{`let arr = [1, 2, 3]; arr.popleft(); arr`, []int{2, 3}},
+		{`[].popleft()`, "ARRAY must have elements for `popleft`"},
+		{`1.popleft()`, "Identifier not found: 1.popleft"},
 	}
 
 	for i, tt := range tests {
 		evaluated := testEval(tt.input)
-		integer, ok := tt.expected.(int)
-		if ok {
-			testIntegerObject(t, i, evaluated, int64(integer))
-		} else {
+
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, i, evaluated, int64(expected))
+		case nil:
 			testNullObject(t, evaluated)
+		case string:
+			errObj, ok := evaluated.(*object.Error)
+			if !ok {
+				t.Errorf("object is not Error. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if errObj.Message != expected {
+				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
+			}
+		case []int:
+			array, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Errorf("obj not Array. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+
+			if len(array.Elements) != len(expected) {
+				t.Errorf("wrong num of elements. want=%d, got=%d",
+					len(expected), len(array.Elements))
+				continue
+			}
+
+			for i, expectedElem := range expected {
+				testIntegerObject(t, i, array.Elements[i], int64(expectedElem))
+			}
 		}
 	}
 }
