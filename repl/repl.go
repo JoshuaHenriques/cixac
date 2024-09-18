@@ -55,6 +55,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line, err = l.Readline()
+		line = strings.TrimSpace(line)
 
 		if err == readline.ErrInterrupt {
 			if len(line) == 0 {
@@ -82,7 +83,6 @@ func Start(in io.Reader, out io.Writer) {
 			isMultiLine = false
 		}
 
-		line = strings.TrimSpace(line)
 		l := lexer.New(line)
 		p := parser.New(l)
 
