@@ -53,13 +53,7 @@ func runProgram(code string) {
 		printParserErrors(os.Stdout, p.Errors())
 	}
 
-	evaluated := evaluator.Eval(program, object.NewEnvironment())
-	if evaluated != nil {
-		if evaluated.Type() != object.EMPTY_OBJ {
-			io.WriteString(os.Stdout, evaluated.Inspect())
-			io.WriteString(os.Stdout, "\n")
-		}
-	}
+	evaluator.Eval(program, object.NewEnvironment())
 }
 
 func isFlagPassed(name string) bool {
