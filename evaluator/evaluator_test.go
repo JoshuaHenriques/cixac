@@ -803,6 +803,12 @@ func TestArrayMethodExpressions(t *testing.T) {
 		{`let arr = [1, 2, 3]; arr.popleft(); arr`, []int{2, 3}},
 		{`[].popleft()`, "ARRAY must have elements for `popleft`"},
 		{`1.popleft()`, "Identifier not found: 1.popleft"},
+		{`let arr = [1, 2, 3, 4, 5]; arr.slice(1, 3)`, []int{2, 3}},
+		{`[1, 2, 3, 4, 5].slice(1, 3)`, []int{2, 3}},
+		{`[1, 2, 3, 4, 5].slice(1, 8)`, "slice bounds out of range, [1:8] with array len of 5"},
+		{`[1, 2, 3, 4, 5].slice(3, 1)`, "slice bounds out of range, [3:1] with array len of 5"},
+		{`[1, 2, 3, 4, 5].slice(1, 3, 5)`, "wrong number of arguments. got=3, want=2 or 3"},
+		{`[].slice(1, 3)`, "array must have elements"},
 	}
 
 	for i, tt := range tests {
