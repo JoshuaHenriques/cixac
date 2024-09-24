@@ -99,7 +99,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.GT_EQ, p.parseInfixExpression)
-	p.registerInfix(token.PERIOD, p.parseMethodExpression)
+	p.registerInfix(token.PERIOD, p.parseBuiltinExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 
@@ -616,8 +616,8 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	return identifiers
 }
 
-func (p *Parser) parseMethodExpression(left ast.Expression) ast.Expression {
-	exp := &ast.MethodExpression{Token: p.curToken, Left: left}
+func (p *Parser) parseBuiltinExpression(left ast.Expression) ast.Expression {
+	exp := &ast.BuiltinExpression{Token: p.curToken, Left: left}
 
 	p.nextToken()
 	callExp, ok := p.parseExpression(LOWEST).(*ast.CallExpression)
@@ -625,7 +625,7 @@ func (p *Parser) parseMethodExpression(left ast.Expression) ast.Expression {
 		return nil
 	}
 
-	exp.Method = callExp
+	exp.Builtin = callExp
 
 	return exp
 }

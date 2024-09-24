@@ -279,7 +279,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return applyFunction(function, args)
 
-	case *ast.MethodExpression:
+	case *ast.BuiltinExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
 			return left
@@ -288,12 +288,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		methEnv := object.NewEnclosedEnvironment(env)
 		methEnv.Set(ENV_OBJECT_METHOD_FLAG, object.ObjectMeta{Object: left})
 
-		method := Eval(node.Method.Function, methEnv)
+		method := Eval(node.Builtin.Function, methEnv)
 		if isError(method) {
 			return method
 		}
 
-		args := evalExpressions(node.Method.Arguments, env)
+		args := evalExpressions(node.Builtin.Arguments, env)
 		if len(args) == 1 && isError(args[0]) {
 			return args[0]
 		}

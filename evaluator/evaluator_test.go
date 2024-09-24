@@ -776,7 +776,7 @@ func TestHashIndexExpressions(t *testing.T) {
 	}
 }
 
-func TestArrayMethodExpressions(t *testing.T) {
+func TestArrayBuiltinExpressions(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected interface{}

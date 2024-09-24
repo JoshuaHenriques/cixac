@@ -959,7 +959,7 @@ func TestParsingArrayLiterals(t *testing.T) {
 	testInfixExpression(t, array.Elements[2], 3, "+", 3)
 }
 
-func TestParsingMethodExpressions(t *testing.T) {
+func TestParsingBuiltinExpressions(t *testing.T) {
 	input := "arr.push(1 + 1)"
 
 	l := lexer.New(input)
@@ -968,7 +968,7 @@ func TestParsingMethodExpressions(t *testing.T) {
 	checkParserErrors(t, p)
 
 	stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
-	methodExp, ok := stmt.Expression.(*ast.MethodExpression)
+	methodExp, ok := stmt.Expression.(*ast.BuiltinExpression)
 	if !ok {
 		t.Fatalf("exp not *ast.MethodExpression. got=%T", stmt.Expression)
 	}
@@ -977,7 +977,7 @@ func TestParsingMethodExpressions(t *testing.T) {
 		return
 	}
 
-	exp := methodExp.Method
+	exp := methodExp.Builtin
 
 	if !testIdentifier(t, exp.Function, "push") {
 		return
