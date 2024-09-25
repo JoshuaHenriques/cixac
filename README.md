@@ -317,3 +317,4 @@ print(obj[50])
 | `pushleft` | `ARRAY.pushleft(value: EXPRESSION) -> ARRAY` | Mutates the array by adding the value to the beginning. Returns the mutated array. |
 | `pop` | `ARRAY.pop() -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
 | `popleft` | `ARRAY.popleft() -> ANY` | Mutates the array by removing the first element. Returns the popped value. | 
+| `slice` | `ARRAY.slice(idx1: EXPRESSION, idx2?: EXPRESSION) -> ARRAY` | Returns selected elements in an array as a new array. It selects from a given start, up to a (not inclusive) given end. |
