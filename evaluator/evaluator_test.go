@@ -776,6 +776,38 @@ func TestHashIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestHashBuiltinExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`{"key": 5}.get("key")`, 5},
+		{`let map = {"key": 5}; map.get("key")`, 5},
+		{`{}.get("key")`, "key doesn't exists in HASH"},
+		{`1.get("key")`, "Identifier not found: 1.get"},
+	}
+
+	for i, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, i, evaluated, int64(expected))
+		case nil:
+			testNullObject(t, evaluated)
+		case string:
+			errObj, ok := evaluated.(*object.Error)
+			if !ok {
+				t.Errorf("object is not Error. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if errObj.Message != expected {
+				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
+			}
+		}
+	}
+}
+
 func TestArrayBuiltinExpressions(t *testing.T) {
 	tests := []struct {
 		input    string

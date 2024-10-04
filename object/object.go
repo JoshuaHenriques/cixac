@@ -28,6 +28,11 @@ const (
 	CONTINUE_OBJ     = "CONTINUE"
 )
 
+var (
+	NULL  = &Null{}
+	EMPTY = &Empty{}
+)
+
 type Object interface {
 	Type() ObjectType
 	Inspect() string
@@ -176,12 +181,12 @@ func (ao *Array) Inspect() string {
 }
 
 func (ao *Array) Methods(name string) (Object, bool) {
-	method, ok := ArrayBuiltins[name]
+	builtin, ok := ArrayBuiltins[name]
 	if !ok {
 		return nil, false
 	}
 
-	return &method, true
+	return &builtin, true
 }
 
 type HashPair struct {
@@ -208,6 +213,15 @@ func (h *Hash) Inspect() string {
 	out.WriteString("}")
 
 	return out.String()
+}
+
+func (ao *Hash) Methods(name string) (Object, bool) {
+	builtin, ok := HashBuiltins[name]
+	if !ok {
+		return nil, false
+	}
+
+	return &builtin, true
 }
 
 type Break struct{}
