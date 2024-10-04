@@ -12,15 +12,15 @@ import (
 
 // Avoid creating object.Boolean & object.Null every time
 var (
-	NULL                   = &object.Null{}
-	EMPTY                  = &object.Empty{}
-	TRUE                   = &object.Boolean{Value: true}
-	FALSE                  = &object.Boolean{Value: false}
-	BREAK                  = &object.Break{}
-	CONTINUE               = &object.Continue{}
-	ENV_FOR_FLAG           = "ENV_FOR_FLAG"
-	ENV_WHILE_FLAG         = "ENV_WHILE_FLAG"
-	ENV_OBJECT_METHOD_FLAG = "ENV_OBJECT_METHOD_FLAG"
+	NULL                    = &object.Null{}
+	EMPTY                   = &object.Empty{}
+	TRUE                    = &object.Boolean{Value: true}
+	FALSE                   = &object.Boolean{Value: false}
+	BREAK                   = &object.Break{}
+	CONTINUE                = &object.Continue{}
+	ENV_FOR_FLAG            = "ENV_FOR_FLAG"
+	ENV_WHILE_FLAG          = "ENV_WHILE_FLAG"
+	ENV_OBJECT_BUILTIN_FLAG = "ENV_OBJECT_BUILTIN_FLAG"
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -286,7 +286,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		methEnv := object.NewEnclosedEnvironment(env)
-		methEnv.Set(ENV_OBJECT_METHOD_FLAG, object.ObjectMeta{Object: left})
+		methEnv.Set(ENV_OBJECT_BUILTIN_FLAG, object.ObjectMeta{Object: left})
 
 		method := Eval(node.Builtin.Function, methEnv)
 		if isError(method) {
@@ -710,11 +710,11 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		return val.Object
 	}
 
-	if env.ExistsInScope(ENV_OBJECT_METHOD_FLAG) {
-		envObj, _ := env.Get(ENV_OBJECT_METHOD_FLAG)
+	if env.ExistsInScope(ENV_OBJECT_BUILTIN_FLAG) {
+		envObj, _ := env.Get(ENV_OBJECT_BUILTIN_FLAG)
 		obj, ok := envObj.Object.(object.Methodable)
 		if !ok {
-			return newError("Object doesn't not implement Methodable")
+			return newError("Object does not implement Methodable")
 		}
 
 		if objBuiltin, ok := obj.Methods(node.Value); ok {

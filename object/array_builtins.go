@@ -1,10 +1,5 @@
 package object
 
-var (
-	NULL  = &Null{}
-	EMPTY = &Empty{}
-)
-
 var ArrayBuiltins = map[string]Builtin{
 	"push": {
 		Fn: func(args ...Object) Object {
