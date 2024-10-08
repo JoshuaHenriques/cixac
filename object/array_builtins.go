@@ -177,4 +177,16 @@ var ArrayBuiltins = map[string]Builtin{
 			}
 		},
 	},
+	"clear": {
+		Fn: func(args ...Object) Object {
+			if args[0].Type() != ARRAY_OBJ {
+				return newError("argument to `slice` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arr := args[0].(*Array)
+			arr.Elements = []Object{}
+
+			return arr
+		},
+	},
 }
