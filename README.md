@@ -318,3 +318,26 @@ print(obj[50])
 | `pop` | `ARRAY.pop() -> ANY` | Mutates the array by removing the last element. Returns the popped value. | 
 | `popleft` | `ARRAY.popleft() -> ANY` | Mutates the array by removing the first element. Returns the popped value. | 
 | `slice` | `ARRAY.slice(idx1: EXPRESSION, idx2?: EXPRESSION) -> ARRAY` | Returns selected elements in an array as a new array. It selects from a given start, up to a (not inclusive) given end. |
+| `contains` | `ARRAY.contains(ele: ANY) -> BOOLEAN` | Return true if the given value is inside the array and false if not. | 
+| `index` | `ARRAY.index(ele: ANY) -> INTEGER` | Returns the index of the first element with the specified value and -1 if it's not in the array. | 
+
+### Object Builtin Functions
+
+| Function | Signature | Description | 
+|----------|-----------|-------------| 
+| `clear` | `HASHMAP.clear() -> VOID` | Clears all the entries of the hashmap. | 
+| `keys` | `HASHMAP.keys() -> ARRAY` | Returns an array of all the keys in the hashmap. | 
+| `values` | `HASHMAP.values() -> ARRAY` | Returns an array of all the values in the hashmap | 
+| `delete` | `HASHMAP.delete(key: HASHABLE) -> VOID` | Deletes the key:value pair at the given key. | 
+| `get` | `HASHMAP.get(key: HASHABLE) -> ANY` | Returns the value at the given key. | 
+| `set` | `HASHMAP.set(key: HASHABLE, value: ANY) -> VOID` | Sets the given value at the given key. | 
+| `contains` | `HASHMAP.contains(key: HASHABLE) -> BOOLEAN` | Returns true if the given key is inside the hashmap and false if not. |
+
+### String Builtin Functions
+
+| Function | Signature | Description | 
+|----------|-----------|-------------| 
+| `split` | `STRING.split(delim: STRING) -> ARRAY` | Returns an array of the split string at the given delimiter. | 
+| `capitalize` | `STRING.capitalize() -> STRING` | Mutates the string by capitalizing the first letter. Returns the string. | 
+| `lower` | `STRING.lower() -> STRING` | Mutates the string by making every character lowercase. Returns the string. | 
+| `upper` | `STRING.upper() -> STRING` | Mutates the string by making every character uppercase. Returns the string. | 
