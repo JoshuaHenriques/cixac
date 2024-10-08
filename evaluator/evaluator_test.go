@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/beorn7/floats"
@@ -783,8 +784,13 @@ func TestHashBuiltinExpressions(t *testing.T) {
 	}{
 		{`{"key": 5}.get("key")`, 5},
 		{`let map = {"key": 5}; map.get("key")`, 5},
-		{`{}.get("key")`, "key doesn't exists in HASH"},
+		{`{}.get("key")`, "key doesn't exist in HASH"},
 		{`1.get("key")`, "Identifier not found: 1.get"},
+		{`let map = {"key": 5}; map.set("new", 8); map.get("new")`, 8},
+		{`1.set("key")`, "Identifier not found: 1.set"},
+		{`let map = {"key": 5}; map.delete("key"); map.get("key")`, "key doesn't exist in HASH"},
+		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.values()`, []int{5, 10, 15}},
+		{`{"key1": 5, "key2": 10, "key3": 15}.keys()`, []string{"key1", "key2", "key3"}},
 	}
 
 	for i, tt := range tests {
@@ -804,6 +810,57 @@ func TestHashBuiltinExpressions(t *testing.T) {
 			if errObj.Message != expected {
 				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
 			}
+		case []int:
+			array, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Errorf("obj not Array. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if len(array.Elements) != len(expected) {
+				t.Errorf("wrong num of elements. want=%d, got=%d",
+					len(expected), len(array.Elements))
+				continue
+			}
+
+			sort.Slice(array.Elements, func(i, j int) bool {
+				vali := array.Elements[i].(*object.Integer).Value
+				valj := array.Elements[j].(*object.Integer).Value
+				return vali <= valj
+			})
+
+			for i, expectedElem := range expected {
+				testIntegerObject(t, i, array.Elements[i], int64(expectedElem))
+			}
+		case []string:
+			array, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Errorf("obj not Array. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if len(array.Elements) != len(expected) {
+				t.Errorf("wrong num of elements. want=%d, got=%d",
+					len(expected), len(array.Elements))
+				continue
+			}
+
+			sort.Slice(array.Elements, func(i, j int) bool {
+				vali := array.Elements[i].(*object.String).Value
+				valj := array.Elements[j].(*object.String).Value
+				return vali <= valj
+			})
+
+			for i, expectedElem := range expected {
+				arrEle, ok := array.Elements[i].(*object.String)
+				if !ok {
+					t.Errorf("array element not string. got=%T (%+v)", array.Elements[i], array.Elements[i])
+				}
+
+				if arrEle.Value != expectedElem {
+					t.Errorf("string has wrong value. got=%s, want=%s", arrEle, expectedElem)
+				}
+			}
+		default:
+			t.Errorf("no test for given expected type")
 		}
 	}
 }
@@ -876,6 +933,8 @@ func TestArrayBuiltinExpressions(t *testing.T) {
 			for i, expectedElem := range expected {
 				testIntegerObject(t, i, array.Elements[i], int64(expectedElem))
 			}
+		default:
+			t.Errorf("no test for given expected type")
 		}
 	}
 }
