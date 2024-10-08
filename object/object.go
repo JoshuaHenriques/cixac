@@ -151,6 +151,15 @@ func (s *String) HashKey() HashKey {
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
 }
 
+func (so *String) Methods(name string) (Object, bool) {
+	builtin, ok := StringBuiltins[name]
+	if !ok {
+		return nil, false
+	}
+
+	return &builtin, true
+}
+
 type BuiltinFunction func(args ...Object) Object
 
 type Builtin struct {
@@ -215,7 +224,7 @@ func (h *Hash) Inspect() string {
 	return out.String()
 }
 
-func (ao *Hash) Methods(name string) (Object, bool) {
+func (ho *Hash) Methods(name string) (Object, bool) {
 	builtin, ok := HashBuiltins[name]
 	if !ok {
 		return nil, false

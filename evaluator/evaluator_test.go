@@ -791,6 +791,7 @@ func TestHashBuiltinExpressions(t *testing.T) {
 		{`let map = {"key": 5}; map.delete("key"); map.get("key")`, "key doesn't exist in HASH"},
 		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.values()`, []int{5, 10, 15}},
 		{`{"key1": 5, "key2": 10, "key3": 15}.keys()`, []string{"key1", "key2", "key3"}},
+		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.clear(); len(map)`, 0},
 	}
 
 	for i, tt := range tests {
@@ -898,6 +899,7 @@ func TestArrayBuiltinExpressions(t *testing.T) {
 		{`[1, 2, 3, 4, 5].slice(3, 1)`, "slice bounds out of range, [3:1] with array len of 5"},
 		{`[1, 2, 3, 4, 5].slice(1, 3, 5)`, "wrong number of arguments. got=3, want=2 or 3"},
 		{`[].slice(1, 3)`, "array must have elements"},
+		{`let arr = [1, 2, 3, 4, 5]; arr.clear(); len(arr)`, 0},
 	}
 
 	for i, tt := range tests {
@@ -935,6 +937,73 @@ func TestArrayBuiltinExpressions(t *testing.T) {
 			}
 		default:
 			t.Errorf("no test for given expected type")
+		}
+	}
+}
+
+func TestStringBuiltinExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`let str = "uppercase me"; str.upper(); str`, "UPPERCASE ME"},
+		{`let str = ""; str.upper()`, "string must have length greater than 0"},
+		{`let str = "LOWERCASE ME"; str.lower(); str`, "lowercase me"},
+		{`let str = ""; str.lower()`, "string must have length greater than 0"},
+		{`let str = "capitalize me"; str.capitalize(); str`, "Capitalize me"},
+		{`let str = ""; str.capitalize()`, "string must have length greater than 0"},
+		{`let str = "this.is.a.string"; str.split(".")`, []string{"this", "is", "a", "string"}},
+		{`let str = ""; str.split(".")`, "string must have length greater than 0"},
+	}
+
+	for i, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, i, evaluated, int64(expected))
+		case nil:
+			testNullObject(t, evaluated)
+		case string:
+			eval, ok := evaluated.(*object.String)
+			if ok {
+				if eval.Value == expected {
+					continue
+				} else {
+					t.Errorf("wrong result. expected=%s, got=%s", expected, eval.Value)
+				}
+			}
+
+			errObj, ok := evaluated.(*object.Error)
+			if !ok {
+				t.Errorf("object is not Error. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if errObj.Message != expected {
+				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
+			}
+		case []string:
+			array, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Errorf("obj not ARRAY. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if len(array.Elements) != len(expected) {
+				t.Errorf("wrong num of elements. want=%d, got=%d",
+					len(expected), len(array.Elements))
+				continue
+			}
+
+			for i, expectedElem := range expected {
+				arrEle, ok := array.Elements[i].(*object.String)
+				if !ok {
+					t.Errorf("array element not string. got=%T (%+v)", array.Elements[i], array.Elements[i])
+				}
+
+				if arrEle.Value != expectedElem {
+					t.Errorf("string has wrong value. got=%s, want=%s", arrEle, expectedElem)
+				}
+			}
 		}
 	}
 }
