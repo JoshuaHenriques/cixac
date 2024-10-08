@@ -21,8 +21,8 @@ func check(e error) {
 }
 
 var (
-	BuildVersion string = "0.1-alpha"
-	BuildDate    string = "Aug 20 2024"
+	BuildVersion string = "0.5-beta"
+	BuildDate    string = "Oct 03 2024"
 )
 
 func main() {
