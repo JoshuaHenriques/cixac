@@ -44,6 +44,8 @@ Type "quit()" to exit the REPL
 + [Binary and Unary Operators](#binary-and-unary-operators)
 + [Builtin Functions](#builtin-functions)
 + [Array Builtin Functions](#array-builtin-functions)
++ [Object Builtin Functions](#object-builtin-functions)
++ [String Builtin Functions](#string-builtin-functions)
 
 ## Summary
 
