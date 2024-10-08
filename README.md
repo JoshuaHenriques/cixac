@@ -20,7 +20,7 @@ The Cixac programming language — pronounced 'SIGH-zack' — is a passion proje
 
 ```
 $ make run or $ ./bin/cixac
-Cixac Version: 0.1-alpha (Aug 20 2024)
+Cixac Version: 0.5-beta (Oct 03 2024)
 Type "quit()" to exit the REPL
 >> 
 ```
