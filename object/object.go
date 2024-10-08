@@ -31,6 +31,8 @@ const (
 var (
 	NULL  = &Null{}
 	EMPTY = &Empty{}
+	TRUE  = &Boolean{Value: true}
+	FALSE = &Boolean{Value: false}
 )
 
 type Object interface {
