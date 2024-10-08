@@ -77,7 +77,7 @@ var StringBuiltins = map[string]Builtin{
 				return newError("argument to `split` must be STRING, got %s", args[0].Type())
 			}
 			if args[1].Type() != STRING_OBJ {
-				return newError("argument to `split` mus tbe STRING, got %s, args[1].Type()")
+				return newError("argument to `split` must be STRING, got %s:", args[1].Type())
 			}
 
 			str := args[0].(*String)
