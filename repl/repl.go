@@ -1,86 +1,35 @@
 package repl
 
 import (
+	"bufio"
+	"fmt"
 	"io"
-	"log"
 	"os"
-	"strings"
 
-	"github.com/chzyer/readline"
 	"github.com/joshuahenriques/cixac/evaluator"
 	"github.com/joshuahenriques/cixac/lexer"
 	"github.com/joshuahenriques/cixac/object"
 	"github.com/joshuahenriques/cixac/parser"
 )
 
-func filterInput(r rune) (rune, bool) {
-	switch r {
-	// block CtrlZ feature
-	case readline.CharCtrlZ:
-		return r, false
-	}
-	return r, true
-}
+const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
-	l, err := readline.NewEx(&readline.Config{
-		Prompt:              "\033[31m»\033[0m ",
-		HistoryFile:         "/tmp/readline.tmp",
-		InterruptPrompt:     "^C",
-		EOFPrompt:           "exit",
-		HistorySearchFold:   true,
-		FuncFilterInputRune: filterInput,
-	})
-	if err != nil {
-		panic(err)
-	}
-	defer l.Close()
-	l.CaptureExitSignal()
-
+	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
 
-	log.SetOutput(l.Stderr())
-
-	var multiLineBuffer strings.Builder
-	isMultiLine := false
-
 	for {
-		var line string
-		var err error
+		fmt.Fprint(out, PROMPT)
+		scanned := scanner.Scan()
 
-		if isMultiLine {
-			l.SetPrompt("... ")
-		} else {
-			l.SetPrompt("\033[31m»\033[0m ")
+		if !scanned {
+			return
 		}
 
-		line, err = l.Readline()
-		line = strings.TrimSpace(line)
+		line := scanner.Text()
 
-		if err == readline.ErrInterrupt {
-			if len(line) == 0 {
-				break
-			} else {
-				continue
-			}
-		} else if err == io.EOF {
-			break
-		}
-
-		switch {
-		case line == "quit()":
+		if line == "quit()" {
 			os.Exit(0)
-		case strings.HasSuffix(line, `\`):
-			multiLineBuffer.WriteString(strings.TrimSuffix(line, `\`) + "\n")
-			isMultiLine = true
-			continue
-		}
-
-		if isMultiLine {
-			multiLineBuffer.WriteString(line + "\n")
-			line = multiLineBuffer.String()
-			multiLineBuffer.Reset()
-			isMultiLine = false
 		}
 
 		l := lexer.New(line)
