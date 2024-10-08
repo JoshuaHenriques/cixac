@@ -180,13 +180,89 @@ var ArrayBuiltins = map[string]Builtin{
 	"clear": {
 		Fn: func(args ...Object) Object {
 			if args[0].Type() != ARRAY_OBJ {
-				return newError("argument to `slice` must be ARRAY, got %s", args[0].Type())
+				return newError("argument to `clear` must be ARRAY, got %s", args[0].Type())
 			}
 
 			arr := args[0].(*Array)
 			arr.Elements = []Object{}
 
 			return arr
+		},
+	},
+	"contains": {
+		Fn: func(args ...Object) Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != ARRAY_OBJ {
+				return newError("argument to `contains` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arr := args[0].(*Array)
+			searchEle := args[1]
+
+			for _, obj := range arr.Elements {
+				if obj.Type() == args[1].Type() {
+					switch searchEle.Type() {
+					case INTEGER_OBJ:
+						if obj.(*Integer).Value == searchEle.(*Integer).Value {
+							return &Boolean{Value: true}
+						}
+					case FLOAT_OBJ:
+						if obj.(*Float).Value == searchEle.(*Float).Value {
+							return &Boolean{Value: true}
+						}
+					case STRING_OBJ:
+						if obj.(*String).Value == searchEle.(*String).Value {
+							return &Boolean{Value: true}
+						}
+					case BOOLEAN_OBJ:
+						if obj.(*Boolean).Value == searchEle.(*Boolean).Value {
+							return &Boolean{Value: true}
+						}
+					}
+				}
+			}
+
+			return &Boolean{Value: false}
+		},
+	},
+	"index": {
+		Fn: func(args ...Object) Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != ARRAY_OBJ {
+				return newError("argument to `index` must be ARRAY, got %s", args[0].Type())
+			}
+
+			arr := args[0].(*Array)
+			searchEle := args[1]
+
+			for i, obj := range arr.Elements {
+				if obj.Type() == args[1].Type() {
+					switch searchEle.Type() {
+					case INTEGER_OBJ:
+						if obj.(*Integer).Value == searchEle.(*Integer).Value {
+							return &Integer{Value: int64(i)}
+						}
+					case FLOAT_OBJ:
+						if obj.(*Float).Value == searchEle.(*Float).Value {
+							return &Integer{Value: int64(i)}
+						}
+					case STRING_OBJ:
+						if obj.(*String).Value == searchEle.(*String).Value {
+							return &Integer{Value: int64(i)}
+						}
+					case BOOLEAN_OBJ:
+						if obj.(*Boolean).Value == searchEle.(*Boolean).Value {
+							return &Integer{Value: int64(i)}
+						}
+					}
+				}
+			}
+
+			return &Integer{Value: -1}
 		},
 	},
 }

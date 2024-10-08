@@ -792,6 +792,9 @@ func TestHashBuiltinExpressions(t *testing.T) {
 		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.values()`, []int{5, 10, 15}},
 		{`{"key1": 5, "key2": 10, "key3": 15}.keys()`, []string{"key1", "key2", "key3"}},
 		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.clear(); len(map)`, 0},
+		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.contains("key3")`, true},
+		{`let map = {"key1": 5, "key2": 10, "key3": 15}; map.contains("key4")`, false},
+		{`let map = {}; map.contains("key4")`, false},
 	}
 
 	for i, tt := range tests {
@@ -811,6 +814,8 @@ func TestHashBuiltinExpressions(t *testing.T) {
 			if errObj.Message != expected {
 				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
 			}
+		case bool:
+			testBooleanObject(t, i, evaluated, expected)
 		case []int:
 			array, ok := evaluated.(*object.Array)
 			if !ok {
@@ -900,6 +905,16 @@ func TestArrayBuiltinExpressions(t *testing.T) {
 		{`[1, 2, 3, 4, 5].slice(1, 3, 5)`, "wrong number of arguments. got=3, want=2 or 3"},
 		{`[].slice(1, 3)`, "array must have elements"},
 		{`let arr = [1, 2, 3, 4, 5]; arr.clear(); len(arr)`, 0},
+		{`let arr = [1, 2, 3, 4, 5]; arr.contains(3)`, true},
+		{`let arr = [1, 2, "ele", 4, 5]; arr.contains("ele")`, true},
+		{`let arr = [1, 2, 3.3, 4, 5]; arr.contains(3.3)`, true},
+		{`let arr = [1, 2, 3.3, 4, 5]; arr.contains(4.4)`, false},
+		{`let arr = [1, 2, true, 4, 5]; arr.contains(true)`, true},
+		{`let arr = [1, 2, 3, 4, 5]; arr.index(3)`, 2},
+		{`let arr = [1, 2, "ele", 4, 5]; arr.index("ele")`, 2},
+		{`let arr = [1, 2, 3.3, 4, 5]; arr.index(3.3)`, 2},
+		{`let arr = [1, 2, 3.3, 4, 5]; arr.index(4.4)`, -1},
+		{`let arr = [1, 2, true, 4, 5]; arr.index(true)`, 2},
 	}
 
 	for i, tt := range tests {
@@ -910,6 +925,8 @@ func TestArrayBuiltinExpressions(t *testing.T) {
 			testIntegerObject(t, i, evaluated, int64(expected))
 		case nil:
 			testNullObject(t, evaluated)
+		case bool:
+			testBooleanObject(t, i, evaluated, expected)
 		case string:
 			errObj, ok := evaluated.(*object.Error)
 			if !ok {

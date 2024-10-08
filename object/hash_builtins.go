@@ -73,7 +73,7 @@ var HashBuiltins = map[string]Builtin{
 				return newError("wrong number of arguments. got=%d, want=0", len(args))
 			}
 			if args[0].Type() != HASH_OBJ {
-				return newError("argument to `delete` must be HASH, got %s", args[0].Type())
+				return newError("argument to `values` must be HASH, got %s", args[0].Type())
 			}
 
 			hash := args[0].(*Hash)
@@ -92,7 +92,7 @@ var HashBuiltins = map[string]Builtin{
 				return newError("wrong number of arguments. got=%d, want=0", len(args))
 			}
 			if args[0].Type() != HASH_OBJ {
-				return newError("argument to `delete` must be HASH, got %s", args[0].Type())
+				return newError("argument to `keys` must be HASH, got %s", args[0].Type())
 			}
 
 			hash := args[0].(*Hash)
@@ -111,13 +111,36 @@ var HashBuiltins = map[string]Builtin{
 				return newError("wrong number of arguments. got=%d, want=0", len(args))
 			}
 			if args[0].Type() != HASH_OBJ {
-				return newError("argument to `delete` must be HASH, got %s", args[0].Type())
+				return newError("argument to `clear` must be HASH, got %s", args[0].Type())
 			}
 
 			hash := args[0].(*Hash)
 			clear(hash.Pairs)
 
 			return hash
+		},
+	},
+	"contains": {
+		Fn: func(args ...Object) Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != HASH_OBJ {
+				return newError("argument to `contains` must be HASH, got %s", args[0].Type())
+			}
+
+			hash := args[0].(*Hash)
+			key, ok := args[1].(Hashable)
+			if !ok {
+				return newError("argument to `contains` must the HASHABLE, got %s", args[1].Type())
+			}
+
+			_, ok = hash.Pairs[key.HashKey()]
+			if !ok {
+				return FALSE
+			}
+
+			return TRUE
 		},
 	},
 }
