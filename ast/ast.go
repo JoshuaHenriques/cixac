@@ -278,7 +278,7 @@ type ForInLoopStatement struct {
 	Token        token.Token // the for token
 	KeyIndex     *Identifier
 	ValueElement *Identifier
-	Iterable     Iterable // hashmap/array/string
+	Iterable     Expression // hashmap/array/string
 	Body         *BlockStatement
 }
 
