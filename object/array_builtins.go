@@ -167,7 +167,7 @@ var ArrayBuiltins = map[string]Builtin{
 				idx1 := args[1].(*Integer)
 				idx2 := args[2].(*Integer)
 
-				if idx1.Value > idx2.Value || idx1.Value < 0 || idx2.Value >= int64(lenArr-1) {
+				if idx1.Value > idx2.Value || idx1.Value < 0 || idx2.Value >= int64(lenArr) {
 					return newError("slice bounds out of range, [%d:%d] with array len of %d", idx1.Value, idx2.Value, lenArr)
 				}
 
