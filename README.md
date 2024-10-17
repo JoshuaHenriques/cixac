@@ -1,8 +1,10 @@
-# The Cixac Programming Language
+# The [Cixac](https://cixac.dev) Programming Language
 
 The Cixac programming language — pronounced 'SIGH-zack' — is a passion project that I decided to pursue with inspiration and guidance from Thorsten Ball's [book](https://interpreterbook.com/). Creating this interpreter is the first (out of three) implementation of my object-oriented dynamic programming language.
 
 **Note:** The documentation for the Cixac programming language is currently under construction.
+
+Try out the demo at: [cixac.dev](https://cixac.dev)
 
 ## Quickstart with REPL
 
@@ -20,7 +22,7 @@ The Cixac programming language — pronounced 'SIGH-zack' — is a passion proje
 
 ```
 $ make run or $ ./bin/cixac
-Cixac Version: 0.1-alpha (Aug 20 2024)
+Cixac Version: 0.5-beta (Oct 03 2024)
 Type "quit()" to exit the REPL
 >> 
 ```

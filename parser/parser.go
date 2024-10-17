@@ -460,14 +460,7 @@ func (p *Parser) parseForInLoopStatement(tok token.Token) *ast.ForInLoopStatemen
 	}
 	p.nextToken()
 
-	iterable, ok := p.parseExpression(LOWEST).(ast.Iterable)
-	if !ok {
-		msg := fmt.Sprintf("could not parse %q as iterable", p.curToken.Literal)
-		p.errors = append(p.errors, msg)
-		return nil
-	}
-
-	forInLoop.Iterable = iterable
+	forInLoop.Iterable = p.parseExpression(LOWEST)
 
 	if !p.expectPeek(token.RPAREN) {
 		return nil

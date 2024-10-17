@@ -581,11 +581,11 @@ func evalForInLoopStatement(fl *ast.ForInLoopStatement, env *object.Environment)
 	forEnv := object.NewEnclosedEnvironment(env)
 	forEnv.Set(ENV_FOR_FLAG, object.ObjectMeta{Object: TRUE})
 
-	switch fl.Iterable.(type) {
-	case *ast.ArrayLiteral:
-		array := Eval(fl.Iterable.(*ast.ArrayLiteral), env).(*object.Array)
+	iterable := Eval(fl.Iterable, env)
 
-		for i, ele := range array.Elements {
+	switch iterable := iterable.(type) {
+	case *object.Array:
+		for i, ele := range iterable.Elements {
 			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: &object.Integer{Value: int64(i)}})
 			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: ele})
 
@@ -595,9 +595,8 @@ func evalForInLoopStatement(fl *ast.ForInLoopStatement, env *object.Environment)
 				break
 			}
 		}
-	case *ast.HashLiteral:
-		hashmap := Eval(fl.Iterable.(*ast.HashLiteral), env).(*object.Hash)
-		for _, hashPair := range hashmap.Pairs {
+	case *object.Hash:
+		for _, hashPair := range iterable.Pairs {
 			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: hashPair.Key})
 			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: hashPair.Value})
 
@@ -607,9 +606,8 @@ func evalForInLoopStatement(fl *ast.ForInLoopStatement, env *object.Environment)
 				break
 			}
 		}
-	case *ast.StringLiteral:
-		str := Eval(fl.Iterable.(*ast.StringLiteral), env).(*object.String)
-		for i, ch := range str.Value {
+	case *object.String:
+		for i, ch := range iterable.Value {
 			forEnv.Set(fl.KeyIndex.Value, object.ObjectMeta{Object: &object.Integer{Value: int64(i)}})
 			forEnv.Set(fl.ValueElement.Value, object.ObjectMeta{Object: &object.String{Value: string(ch)}})
 
