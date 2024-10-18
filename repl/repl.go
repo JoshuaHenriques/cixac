@@ -36,15 +36,16 @@ func Start(in io.Reader, out io.Writer) {
 		p := parser.New(l)
 
 		program := p.ParseProgram()
-		if len(p.Errors()) != 0 {
-			printParserErrors(out, p.Errors())
-			continue
-		}
 
 		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil && evaluated.Type() != object.EMPTY_OBJ {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
+		}
+
+		if len(p.Errors()) != 0 {
+			printParserErrors(out, p.Errors())
+			continue
 		}
 	}
 }
